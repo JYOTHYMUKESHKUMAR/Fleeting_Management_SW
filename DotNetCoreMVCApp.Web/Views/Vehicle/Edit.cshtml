@@ -1,0 +1,292 @@
+﻿@model DotNetCoreMVCApp.Models.Repository.Vehicle
+@{
+    ViewData["Title"] = "Edit Vehicle";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>Edit Vehicle</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="VehicleId" />
+                <input type="hidden" asp-for="CreatedBy" />
+                <input type="hidden" asp-for="CreatedOn" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Vehicle Identification Section -->
+                        <div class="form-group mb-3">
+                            <label asp-for="VehicleId" class="control-label">Vehicle ID</label>
+                            <input asp-for="VehicleId" class="form-control" disabled />
+                            <span asp-validation-for="VehicleId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="LicensePlate" class="control-label">License Plate *</label>
+                            <input asp-for="LicensePlate" class="form-control" required />
+                            <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="WoqodLicensePlate" class="control-label">Woqod License Plate *</label>
+                            <input asp-for="WoqodLicensePlate" class="form-control" required />
+                            <span asp-validation-for="WoqodLicensePlate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="GPSCode" class="control-label">GPS Code *</label>
+                            <input asp-for="GPSCode" class="form-control" required />
+                            <span asp-validation-for="GPSCode" class="text-danger"></span>
+                        </div>
+
+                        <!-- Vehicle Details Section -->
+                        <div class="form-group mb-3">
+                            <label asp-for="VehicleType" class="control-label">Vehicle Type *</label>
+                            <select asp-for="VehicleType" class="form-control" required
+                                    asp-items="@(new SelectList(DotNetCoreMVCApp.Models.Repository.VehicleTypeHelper.GetAllTypes()))">
+                                <option value="">-- Select Vehicle Type --</option>
+                            </select>
+                            <span asp-validation-for="VehicleType" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="VehicleBrand" class="control-label">Vehicle Brand *</label>
+                            <input asp-for="VehicleBrand" class="form-control" required />
+                            <span asp-validation-for="VehicleBrand" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="VehicleModel" class="control-label">Vehicle Model *</label>
+                            <input asp-for="VehicleModel" class="form-control" required />
+                            <span asp-validation-for="VehicleModel" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Year" class="control-label">Year *</label>
+                            <input asp-for="Year" type="number" class="form-control" required min="1900" max="@DateTime.Now.Year" />
+                            <span asp-validation-for="Year" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Fuel Information Section -->
+                        <div class="form-group mb-3">
+                            <label asp-for="FuelTankCapacity" class="control-label">Fuel Tank Capacity (L) *</label>
+                            <input asp-for="FuelTankCapacity" type="number" step="0.01" class="form-control" required />
+                            <span asp-validation-for="FuelTankCapacity" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="FuelLimit" class="control-label">Fuel Limit (L) *</label>
+                            <input asp-for="FuelLimit" type="number" step="0.01" class="form-control" required />
+                            <span asp-validation-for="FuelLimit" class="text-danger"></span>
+                        </div>
+
+                        <!-- Documentation Section -->
+                        <div class="form-group mb-3">
+                            <label asp-for="RegistrationExpiryDate" class="control-label">Registration Expiry Date *</label>
+                            <input asp-for="RegistrationExpiryDate" type="date" class="form-control" required />
+                            <span asp-validation-for="RegistrationExpiryDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="InsurancePolicyNo" class="control-label">Insurance Policy No *</label>
+                            <input asp-for="InsurancePolicyNo" class="form-control" required maxlength="50" />
+                            <span asp-validation-for="InsurancePolicyNo" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="InsurancePolicyExpiry" class="control-label">Insurance Policy Expiry *</label>
+                            <input asp-for="InsurancePolicyExpiry" type="date" class="form-control" required />
+                            <span asp-validation-for="InsurancePolicyExpiry" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col">
+                        <p><small class="text-muted">* Required fields</small></p>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // Enable client-side validation
+            $.validator.unobtrusive.parse("form");
+
+            // Add custom validation for License Plates and GPS Code
+            $.validator.addMethod("licensePlateFormat", function (value, element) {
+                return this.optional(element) || /^[A-Za-z0-9-]{1,20}$/.test(value);
+            }, "Must be alphanumeric and not exceed 20 characters");
+
+            $.validator.addMethod("gpsCodeFormat", function (value, element) {
+                return this.optional(element) || /^[A-Za-z0-9-]{1,50}$/.test(value);
+            }, "Must be alphanumeric and not exceed 50 characters");
+
+            // Configure validation rules
+            $('form').validate({
+                rules: {
+                    LicensePlate: {
+                        required: true,
+                        licensePlateFormat: true
+                    },
+                    WoqodLicensePlate: {
+                        required: true,
+                        licensePlateFormat: true
+                    },
+                    GPSCode: {
+                        required: true,
+                        gpsCodeFormat: true
+                    },
+                    VehicleType: {
+                        required: true
+                    },
+                    VehicleBrand: {
+                        required: true
+                    },
+                    VehicleModel: {
+                        required: true
+                    },
+                    Year: {
+                        required: true,
+                        number: true,
+                        min: 1900,
+                        max: new Date().getFullYear()
+                    },
+                    FuelTankCapacity: {
+                        required: true,
+                        number: true,
+                        min: 0,
+                        max: 2000
+                    },
+                    FuelLimit: {
+                        required: true,
+                        number: true,
+                        min: 0,
+                        max: 2000
+                    },
+                    RegistrationExpiryDate: {
+                        required: true,
+                        date: true
+                    },
+                    InsurancePolicyNo: {
+                        required: true,
+                        maxlength: 50
+                    },
+                    InsurancePolicyExpiry: {
+                        required: true,
+                        date: true
+                    }
+                },
+                messages: {
+                    LicensePlate: {
+                        required: "License Plate is required"
+                    },
+                    WoqodLicensePlate: {
+                        required: "Woqod License Plate is required"
+                    },
+                    GPSCode: {
+                        required: "GPS Code is required"
+                    },
+                    VehicleType: {
+                        required: "Vehicle Type is required"
+                    },
+                    VehicleBrand: {
+                        required: "Vehicle Brand is required"
+                    },
+                    VehicleModel: {
+                        required: "Vehicle Model is required"
+                    },
+                    Year: {
+                        required: "Year is required",
+                        min: "Year must be 1900 or later",
+                        max: "Year cannot be in the future"
+                    },
+                    FuelTankCapacity: {
+                        required: "Fuel Tank Capacity is required",
+                        number: "Please enter a valid number",
+                        min: "Fuel Tank Capacity must be at least 0 liters",
+                        max: "Fuel Tank Capacity cannot exceed 2000 liters"
+                    },
+                    FuelLimit: {
+                        required: "Fuel Limit is required",
+                        number: "Please enter a valid number",
+                        min: "Fuel Limit must be at least 0 liters",
+                        max: "Fuel Limit cannot exceed 2000 liters"
+                    },
+                    RegistrationExpiryDate: {
+                        required: "Registration Expiry Date is required",
+                        date: "Please enter a valid date"
+                    },
+                    InsurancePolicyNo: {
+                        required: "Insurance Policy Number is required",
+                        maxlength: "Insurance Policy Number cannot exceed 50 characters"
+                    },
+                    InsurancePolicyExpiry: {
+                        required: "Insurance Policy Expiry Date is required",
+                        date: "Please enter a valid date"
+                    }
+                },
+                submitHandler: function (form) {
+                    // Validate fuel limit against tank capacity
+                    const tankCapacity = parseFloat($("#FuelTankCapacity").val());
+                    const fuelLimit = parseFloat($("#FuelLimit").val());
+
+                    if (fuelLimit > tankCapacity) {
+                        alert("Fuel limit cannot exceed fuel tank capacity");
+                        return false;
+                    }
+
+                    // Disable submit button to prevent double submission
+                    $(form).find('button[type="submit"]').prop('disabled', true);
+                    form.submit();
+                }
+            });
+
+            // Auto-format inputs
+            $("#LicensePlate, #WoqodLicensePlate").on("input", function () {
+                var value = $(this).val();
+                value = value.replace(/[^A-Za-z0-9-]/g, '').substring(0, 20);
+                $(this).val(value.toUpperCase());
+            });
+
+            $("#GPSCode").on("input", function () {
+                var value = $(this).val();
+                value = value.replace(/[^A-Za-z0-9-]/g, '').substring(0, 50);
+                $(this).val(value);
+            });
+
+            // Format numeric fields to 2 decimal places on blur
+            $("#FuelTankCapacity, #FuelLimit").on("blur", function () {
+                const value = $(this).val();
+                if (value && !isNaN(value)) {
+                    $(this).val(parseFloat(value).toFixed(2));
+                }
+            });
+
+            // Trim text inputs on blur
+            $("#VehicleBrand, #VehicleModel, #GPSCode, #InsurancePolicyNo").on("blur", function () {
+                $(this).val($(this).val().trim());
+            });
+        });
+    </script>
+}

@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Import Driver";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Import Driver</h1>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                Instructions
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li>Download the sample template below.</li>
+                    <li>Fill in your driver data following the template format.</li>
+                    <li>Save the file as CSV.</li>
+                    <li>Upload the file using the form below.</li>
+                    <li>Click 'Import' to process your data.</li>
+                </ol>
+                <p><strong>Note:</strong> Ensure that the 'ID' field is a unique number for each Driver</p>
+                <a asp-action="DownloadTemplate" class="btn btn-info">
+                    <i class="fas fa-download"></i> Download Sample Template
+                </a>
+            </div>
+        </div>
+        <form asp-action="Import" enctype="multipart/form-data" method="post">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="file" class="control-label">Select CSV File</label>
+                <input type="file" id="file" name="file" class="form-control-file" accept=".csv" required />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Import" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('form').submit(function (e) {
+                var fileName = $('#file').val();
+                if (fileName) {
+                    var extension = fileName.substr(fileName.lastIndexOf('.') + 1).toLowerCase();
+                    if (extension != 'csv') {
+                        alert('Please select a CSV file.');
+                        e.preventDefault();
+                    }
+                }
+            });
+        });
+    </script>
+}

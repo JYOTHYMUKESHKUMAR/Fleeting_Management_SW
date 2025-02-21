@@ -1,0 +1,289 @@
+﻿@model DotNetCoreMVCApp.Models.Web.DriverViewModel
+@{
+    ViewData["Title"] = "Edit Driver";
+}
+
+<style>
+    .button-container {
+        position: relative;
+        padding-top: 20px;
+    }
+
+    .btn-top-right {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    .field-validation-error {
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+    }
+
+    .input-validation-error {
+        border-color: #dc3545;
+    }
+
+        .input-validation-error:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+    .form-hint {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .required-field::after {
+        content: " *";
+        color: red;
+    }
+
+    .audit-info {
+        font-size: 0.875rem;
+        color: #6c757d;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Edit Driver</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card card-secondary">
+                    <div class="card-header">
+                        <h3 class="card-title">Edit Driver Details</h3>
+                    </div>
+
+                    <form asp-action="Edit" method="post" id="editDriverForm">
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <input type="hidden" asp-for="Id" />
+                            <input type="hidden" asp-for="CreatedBy" />
+                            <input type="hidden" asp-for="CreatedOn" />
+                            <input type="hidden" asp-for="UpdatedBy" />
+                            <input type="hidden" asp-for="UpdatedOn" />
+
+                            <div class="audit-info">
+                                <div><strong>Staff ID:</strong> @Model.Id</div>
+                                <div><strong>Created By:</strong> @(Model.CreatedBy ?? "System") on @(Model.CreatedOn?.ToString("dd/MM/yyyy HH:mm") ?? "-")</div>
+                                @if (!string.IsNullOrEmpty(Model.UpdatedBy))
+                                {
+                                    <div><strong>Last Updated By:</strong> @Model.UpdatedBy on @(Model.UpdatedOn?.ToString("dd/MM/yyyy HH:mm") ?? "-")</div>
+                                }
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Name" class="control-label required-field">Name</label>
+                                <input asp-for="Name" class="form-control" required
+                                       maxlength="100"
+                                       data-val="true"
+                                       data-val-required="Name is required"
+                                       data-val-maxlength-max="100"
+                                       data-val-maxlength="Name cannot exceed 100 characters" />
+                                <span asp-validation-for="Name" class="text-danger field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="QatarId" class="control-label required-field">Qatar ID</label>
+                                <input asp-for="QatarId" class="form-control" required
+                                       maxlength="11"
+                                       pattern="\d{11}"
+                                       data-val="true"
+                                       data-val-required="Qatar ID is required"
+                                       data-val-regex="Qatar ID must be exactly 11 digits"
+                                       data-val-regex-pattern="^\d{11}$" />
+                                <span asp-validation-for="QatarId" class="text-danger field-validation-error"></span>
+                                <small class="form-hint">11-digit Qatar ID number</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="ContactNumber" class="control-label">Contact Number</label>
+                                <input asp-for="ContactNumber" class="form-control"
+                                       maxlength="20"
+                                       data-val="true"
+                                       data-val-maxlength-max="20"
+                                       data-val-maxlength="Contact number cannot exceed 20 characters" />
+                                <span asp-validation-for="ContactNumber" class="text-danger field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="QIDExpiryDate" class="control-label required-field">QID Expiry Date</label>
+                                <input asp-for="QIDExpiryDate" class="form-control" type="date" required
+                                       data-val="true"
+                                       data-val-required="QID Expiry Date is required" />
+                                <span asp-validation-for="QIDExpiryDate" class="text-danger field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Nationality" class="control-label required-field">Nationality</label>
+                                <input asp-for="Nationality" class="form-control" required
+                                       maxlength="50"
+                                       data-val="true"
+                                       data-val-required="Nationality is required"
+                                       data-val-maxlength-max="50"
+                                       data-val-maxlength="Nationality cannot exceed 50 characters" />
+                                <span asp-validation-for="Nationality" class="text-danger field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="DOB" class="control-label required-field">Date of Birth</label>
+                                <input asp-for="DOB" class="form-control" type="date" required
+                                       data-val="true"
+                                       data-val-required="Date of Birth is required" />
+                                <span asp-validation-for="DOB" class="text-danger field-validation-error"></span>
+                            </div>
+
+                            <div class="alert alert-info mt-3">
+                                <small><i class="fas fa-info-circle"></i> Fields marked with * are required</small>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary" id="submitButton">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // Enable client-side validation
+            $.validator.unobtrusive.parse("#editDriverForm");
+
+            // Custom validation for Qatar ID format
+            $.validator.addMethod("qataridFormat", function (value, element) {
+                return this.optional(element) || /^\d{11}$/.test(value);
+            }, "Qatar ID must be exactly 11 digits");
+
+            // Custom validation for unique Qatar ID
+            $.validator.addMethod("qataridUnique", function (value, element) {
+                if (value === '@Model.QatarId') return true; // Skip validation if unchanged
+                var isValid = true;
+                $.ajax({
+                    url: '/Driver/CheckQatarId',
+                    type: 'POST',
+                    async: false,
+                    data: { qatarId: value, currentId: @Model.Id },
+                    success: function (result) {
+                        isValid = result.isAvailable;
+                    }
+                });
+                return isValid;
+            }, "This Qatar ID is already registered with another driver");
+
+            // Custom validation for minimum age (18 years)
+            $.validator.addMethod("minimumAge", function (value, element) {
+                if (value) {
+                    var dob = new Date(value);
+                    var today = new Date();
+                    var age = today.getFullYear() - dob.getFullYear();
+                    var m = today.getMonth() - dob.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                        age--;
+                    }
+                    return age >= 18;
+                }
+                return true;
+            }, "Driver must be at least 18 years old");
+
+            // Custom validation for QID expiry date
+            $.validator.addMethod("futureDate", function (value, element) {
+                if (value) {
+                    var inputDate = new Date(value);
+                    var today = new Date();
+                    return inputDate > today;
+                }
+                return true;
+            }, "QID Expiry Date must be in the future");
+
+            // Configure validation rules
+            $("#editDriverForm").validate({
+                rules: {
+                    Name: {
+                        required: true,
+                        maxlength: 100
+                    },
+                    QatarId: {
+                        required: true,
+                        qataridFormat: true,
+                        qataridUnique: true
+                    },
+                    ContactNumber: {
+                        maxlength: 20
+                    },
+                    QIDExpiryDate: {
+                        required: true,
+                        futureDate: true
+                    },
+                    Nationality: {
+                        required: true,
+                        maxlength: 50
+                    },
+                    DOB: {
+                        required: true,
+                        minimumAge: true
+                    }
+                },
+                errorElement: 'span',
+                errorClass: 'text-danger field-validation-error',
+                highlight: function (element) {
+                    $(element).addClass('input-validation-error');
+                },
+                unhighlight: function (element) {
+                    $(element).removeClass('input-validation-error');
+                },
+                submitHandler: function (form) {
+                    $("#submitButton").prop('disabled', true)
+                        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+                    form.submit();
+                }
+            });
+
+            // Input formatting for Qatar ID
+            $("#QatarId").on("input", function () {
+                var value = $(this).val();
+                value = value.replace(/\D/g, '').substring(0, 11);
+                $(this).val(value);
+            });
+
+            // Set min date for QID Expiry Date to tomorrow
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            $("#QIDExpiryDate").attr("min", tomorrow.toISOString().split('T')[0]);
+
+            // Set max date for Date of Birth to 18 years ago
+            var maxDOB = new Date();
+            maxDOB.setFullYear(maxDOB.getFullYear() - 18);
+            $("#DOB").attr("max", maxDOB.toISOString().split('T')[0]);
+        });
+    </script>
+}

@@ -1,0 +1,78 @@
+﻿@model DotNetCoreMVCApp.Models.Repository.ConsumptionDetails
+@{
+    ViewData["Title"] = "Delete Consumption Details";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h4>Delete Consumption Details</h4>
+        </div>
+        <div class="card-body">
+            <h5 class="mb-4">Are you sure you want to delete this record?</h5>
+            <dl class="row">
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.LicensePlate)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.LicensePlate)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.WoqodLicensePlate)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.WoqodLicensePlate)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DriverName)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.DriverName)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ProductName)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.ProductName)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OfflineLimit)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.OfflineLimit)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FuelQuantity)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.FuelQuantity)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UnitPrice)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.UnitPrice)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TotalCost)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.TotalCost)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SaleTime)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.SaleTime)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.InvoiceMonth)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.InvoiceMonth)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.StationName)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.StationName)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.GroupName)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.GroupName)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FleetName)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.FleetName)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CostCenter)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.CostCenter)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OdometerReading)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.OdometerReading)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Remarks)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Remarks)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedBy)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.CreatedBy)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedOn)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.CreatedOn)</dd>
+            </dl>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

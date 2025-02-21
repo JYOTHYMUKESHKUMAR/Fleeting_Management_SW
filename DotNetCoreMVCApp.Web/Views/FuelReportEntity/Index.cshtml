@@ -1,0 +1,336 @@
+﻿@model DotNetCoreMVCApp.Models.Repository.FuelReportViewModel
+
+@{
+    ViewData["Title"] = "Fuel Report";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">Fuel Report</h1>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Filters</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" id="filterForm">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Filter.StartDate" class="form-label"></label>
+                        <input asp-for="Filter.StartDate" class="form-control" type="date" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Filter.EndDate" class="form-label"></label>
+                        <input asp-for="Filter.EndDate" class="form-control" type="date" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Filter.DriverId" class="form-label"></label>
+                        <select asp-for="Filter.DriverId" asp-items="Model.DriversList" class="form-select">
+                            <option value="">-- All Drivers --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Filter.LicensePlate" class="form-label"></label>
+                        <select asp-for="Filter.LicensePlate" asp-items="Model.VehiclesList" class="form-select">
+                            <option value="">-- All Vehicles --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Filter.VehicleType" class="form-label"></label>
+                        <select asp-for="Filter.VehicleType" asp-items="Model.VehicleTypesList" class="form-select">
+                            <option value="">-- All Vehicle Types --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Filter.ProductName" class="form-label"></label>
+                        <select asp-for="Filter.ProductName" asp-items="Model.ProductNamesList" class="form-select">
+                            <option value="">-- All Fuel Types --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">Clear Filters</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Refills</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRefills</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-gas-pump fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Fuel (L)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalFuelConsumed.ToString("N2")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-fill-drip fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Cost</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">QAR @Model.TotalCost.ToString("N2")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Average Km/L</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.AverageKmPerLiter.ToString("N2")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tachometer-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Distance Metrics -->
+    <div class="row mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-danger h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Total Distance (km)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalDistance.ToString("N2")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-road fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-secondary h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Avg Distance/Refill (km)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@(Model.TotalRefills > 0 ? (Model.TotalDistance / Model.TotalRefills).ToString("N2") : "0.00")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-dark h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">Cost per Kilometer</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">QAR @(Model.TotalDistance > 0 ? (Model.TotalCost / Model.TotalDistance).ToString("N2") : "0.00")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-coins fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">Fuel Report Details</h5>
+                <small class="text-muted">@Model.DateRangeDisplay</small>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-primary" onclick="exportTableToExcel()">
+                    <i class="fas fa-file-excel"></i> Export to Excel
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="fuelReportTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Driver</th>
+                            <th>Vehicle</th>
+                            <th>Odometer (km)</th>
+                            <th>Distance (km)</th>
+                            <th>Quantity (L)</th>
+                            <th>Cost/L</th>
+                            <th>Total Cost</th>
+                            <th>Km/L</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Details)
+                        {
+                            <tr>
+                                <td>@item.SaleTime.ToString("dd/MM/yyyy")</td>
+                                <td>@item.DriverName</td>
+                                <td>@item.LicensePlate</td>
+                                <td>@item.OdometerReading.ToString("N2")</td>
+                                <td>@item.DistanceSinceLastRefill.ToString("N2")</td>
+                                <td>@item.FuelQuantity.ToString("N2")</td>
+                                <td>@item.UnitPrice.ToString("N2")</td>
+                                <td>@item.FormattedCost</td>
+                                <td>@item.KmPerLiter.ToString("N2")</td>
+                                <td><span class="@item.StatusClass">@item.FuelLimitStatus</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css" rel="stylesheet" />
+    <style>
+        .border-left-primary {
+            border-left: 4px solid #4e73df !important;
+        }
+
+        .border-left-success {
+            border-left: 4px solid #1cc88a !important;
+        }
+
+        .border-left-info {
+            border-left: 4px solid #36b9cc !important;
+        }
+
+        .border-left-warning {
+            border-left: 4px solid #f6c23e !important;
+        }
+
+        .border-left-danger {
+            border-left: 4px solid #e74a3b !important;
+        }
+
+        .border-left-secondary {
+            border-left: 4px solid #858796 !important;
+        }
+
+        .border-left-dark {
+            border-left: 4px solid #5a5c69 !important;
+        }
+
+        .text-xs {
+            font-size: .7rem;
+        }
+
+        .card {
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Enable Bootstrap tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Custom date sorting function for dd/MM/yyyy format
+            $.fn.dataTable.ext.type.order['date-uk-pre'] = function (d) {
+                if (!d) return 0;
+                var parts = d.split('/');
+                return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+            };
+
+            // Initialize DataTable
+            $('#fuelReportTable').DataTable({
+                "order": [[0, "desc"]], // Sort by date column descending
+                "pageLength": 25,
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "columnDefs": [{
+                    "targets": 0,
+                    "type": "date-uk"
+                }],
+                "language": {
+                    "search": "Search records:",
+                    "zeroRecords": "No matching records found",
+                    "emptyTable": "No data available in table"
+                }
+            });
+
+            // Date range validation
+            $('#filterForm').on('submit', function(e) {
+                var startDate = $('#Filter_StartDate').val();
+                var endDate = $('#Filter_EndDate').val();
+
+                if (startDate && endDate) {
+                    if (new Date(startDate) > new Date(endDate)) {
+                        alert('Start Date cannot be greater than End Date');
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                return true;
+            });
+        });
+
+        function exportTableToExcel() {
+            let table = document.getElementById("fuelReportTable");
+            let html = table.outerHTML;
+            let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
+            let downloadLink = document.createElement("a");
+            document.body.appendChild(downloadLink);
+            downloadLink.href = url;
+            let currentDate = new Date().toISOString().slice(0, 10);
+            downloadLink.download = 'FuelReport_' + currentDate + '.xls';
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        // Function to format currency
+        function formatCurrency(amount) {
+            return 'QAR ' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+    </script>
+}

@@ -1,0 +1,231 @@
+﻿@using DotNetCoreMVCApp.Models.Entities;
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Asset Management - Fueling System</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
+
+    <style>
+        <style >
+        body {
+            background-color: #e0e0e0; /* Lighter grey background */
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #F57C00 0%, #ffae75 60%, #ff9966 100%);
+            padding: 3rem 0;
+            color: white;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* ... other styles remain the same ... */
+
+        .button-section {
+            background: #f5f5f5; /* Light grey background */
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+            max-width: 380px;
+        }
+
+        .feature-button {
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 15px;
+            margin: 1rem auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white;
+            width: 300px;
+            display: block;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .fuel-log-btn {
+            background: #43a047;
+            color: white;
+        }
+
+        .driver-btn {
+            background: #1976D2;
+            color: white;
+        }
+
+        .vehicle-btn {
+            background: #4B0082;
+            color: white;
+        }
+
+        .fuel-report-btn {
+            background: #E91E63;
+            color: white;
+            
+        }
+
+
+        .dashboard-btn {
+            background: #F57C00;
+            color: white;
+        }
+
+        .register-btn {
+            background: #7B1FA2;
+            color: white;
+        }
+
+        .logout-btn {
+            background: #d32f2f;
+            color: white;
+        }
+
+
+
+        .section-title {
+            text-align: center;
+            color: #4a4a4a;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+
+        .main-footer {
+            background: #4a4a4a !important;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+        }
+
+            .main-footer a {
+                text-decoration: none;
+            }
+
+                .main-footer a:hover {
+                    color: #f0f0f0 !important;
+                    text-decoration: underline;
+                }
+
+            .main-footer h5 {
+                margin-bottom: 1.2rem;
+                font-size: 1.2rem;
+            }
+    </style>
+</head>
+<body class="hold-transition layout-fixed">
+    <div class="wrapper">
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__shake" src="~/dist/img/Efilogo.png" height="60" width="60">
+        </div>
+
+        <!-- Main Header -->
+        <div class="hero-section">
+            <div class="container">
+                <div class="logo-container">
+                    <img src="~/dist/img/Efilogo.png" alt="EFI Logo">
+                </div>
+                <h1 class="mb-3">EFI Asset Management - Fueling</h1>
+                <div class="intro-text">
+                    <p>
+                        Comprehensive fuel consumption management system designed to optimize fleet operations,
+                        track fuel usage patterns, and reduce operational costs. Monitor real-time fuel consumption,
+                        generate detailed reports, and make data-driven decisions for better fleet efficiency.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="content-wrapper" style="margin-left: 0;">
+            <!-- Navigation Buttons -->
+            <div class="button-section">
+                <h2 class="section-title">Quick Access</h2>
+                <a href="@Url.Action("Index", "ConsumptionDetails")" class="feature-button fuel-log-btn">
+                    <i class="fas fa-gas-pump"></i>
+                    <span>Fuel Log Management</span>
+                </a>
+                <a href="@Url.Action("Index", "Driver")" class="feature-button driver-btn">
+                    <i class="fas fa-users"></i>
+                    <span>Driver Database</span>
+                </a>
+                <a href="@Url.Action("Index", "Vehicle")" class="feature-button vehicle-btn">
+                    <i class="fas fa-truck-moving nav-icon"></i>
+                    <span>Vehicle Database</span>
+                </a>
+                <a href="@Url.Action("Index", "FuelReportEntity")" class="feature-button fuel-report-btn">
+                    <i class="fas fa-gas-pump nav-icon"></i> 
+                    <span>Fueling Information Report</span>
+                </a>
+                <a href="@Url.Action("Dashboard", "Home")" class="feature-button dashboard-btn">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="@Url.Action("Register", "Account")" class="feature-button register-btn">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Register</span>
+                </a>
+                <a href="@Url.Action("SignOut", "Account")" class="feature-button logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer text-center" style="margin-left: 0; background: #4a4a4a;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5 class="text-white font-weight-bold">About EFI</h5>
+                        <p class="text-white font-weight-bold">Excellence Factors International: Leading the way in asset management solutions.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5 class="text-white font-weight-bold">Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="https://excellencefactors.com" class="text-white font-weight-bold">Company Website</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h5 class="text-white font-weight-bold">Contact</h5>
+                        <p class="text-white font-weight-bold">
+                            Email: info@excellencefactors.com<br>
+                            Phone: (555) 123-4567
+                        </p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12 text-white font-weight-bold">
+                        <strong>Excellence Factors International &copy; @DateTime.Now.Year</strong>
+                        All rights reserved.
+                        <div class="d-inline-block ml-3">
+                            <b>Version</b> 3.2.0
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <!-- Scripts -->
+    <script src="~/plugins/jquery/jquery.min.js"></script>
+    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/dist/js/adminlte.min.js"></script>
+</body>
+</html>

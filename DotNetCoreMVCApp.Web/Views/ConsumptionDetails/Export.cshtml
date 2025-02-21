@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Export Fuel Logs";
+}
+
+<div class="container mt-4">
+    <h2>Export Fuel Logs</h2>
+
+    <form asp-action="ExportData" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <label>Select Export Format:</label>
+            <select name="format" class="form-control">
+                <option value="excel">Excel</option>
+                <option value="pdf">PDF</option>
+                <option value="csv">CSV</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Export</button>
+    </form>
+</div>

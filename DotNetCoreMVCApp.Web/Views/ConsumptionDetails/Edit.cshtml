@@ -1,0 +1,157 @@
+﻿@model DotNetCoreMVCApp.Models.Web.ConsumptionDetailsCreateViewModel
+@{
+    ViewData["Title"] = "Edit Consumption Details";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>Edit Consumption Details</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="LicensePlate" class="control-label"></label>
+                            <select asp-for="LicensePlate" class="form-control" asp-items="Model.LicensePlateList">
+                                <option value="">-- Select License Plate --</option>
+                            </select>
+                            <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DriverId" class="control-label"></label>
+                            <select asp-for="DriverId" class="form-control" asp-items="Model.DriverList">
+                                <option value="">-- Select Driver --</option>
+                            </select>
+                            <span asp-validation-for="DriverId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ProductName" class="control-label"></label>
+                            <select asp-for="ProductName" class="form-control" asp-items="Model.ProductNameList">
+                                <option value="">-- Select Product --</option>
+                            </select>
+                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="OfflineLimit" class="control-label"></label>
+                            <input asp-for="OfflineLimit" class="form-control" />
+                            <span asp-validation-for="OfflineLimit" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="FuelQuantity" class="control-label"></label>
+                            <input asp-for="FuelQuantity" class="form-control" />
+                            <span asp-validation-for="FuelQuantity" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="UnitPrice" class="control-label"></label>
+                            <input asp-for="UnitPrice" class="form-control" />
+                            <span asp-validation-for="UnitPrice" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="TotalCost" class="control-label"></label>
+                            <input asp-for="TotalCost" class="form-control" readonly />
+                            <span asp-validation-for="TotalCost" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="SaleTime" class="control-label"></label>
+                            <input asp-for="SaleTime" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="SaleTime" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="InvoiceMonth" class="control-label"></label>
+                            <input asp-for="InvoiceMonth" class="form-control" />
+                            <span asp-validation-for="InvoiceMonth" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="StationName" class="control-label"></label>
+                            <input asp-for="StationName" class="form-control" />
+                            <span asp-validation-for="StationName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="GroupName" class="control-label"></label>
+                            <input asp-for="GroupName" class="form-control" />
+                            <span asp-validation-for="GroupName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="FleetName" class="control-label"></label>
+                            <input asp-for="FleetName" class="form-control" />
+                            <span asp-validation-for="FleetName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="CostCenter" class="control-label"></label>
+                            <input asp-for="CostCenter" class="form-control" />
+                            <span asp-validation-for="CostCenter" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="OdometerReading" class="control-label"></label>
+                            <input asp-for="OdometerReading" class="form-control" />
+                            <span asp-validation-for="OdometerReading" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Remarks" class="control-label"></label>
+                            <textarea asp-for="Remarks" class="form-control"></textarea>
+                            <span asp-validation-for="Remarks" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            // Calculate total cost when fuel quantity or unit price changes
+            $('#FuelQuantity, #UnitPrice').on('change', function () {
+                var quantity = parseFloat($('#FuelQuantity').val()) || 0;
+                var price = parseFloat($('#UnitPrice').val()) || 0;
+                $('#TotalCost').val((quantity * price).toFixed(2));
+            });
+
+            // Load vehicle details when license plate is selected
+            $('#LicensePlate').on('change', function () {
+                var licensePlate = $(this).val();
+                if (licensePlate) {
+                    $.get('/ConsumptionDetails/GetVehicleDetails', { licensePlate: licensePlate })
+                        .done(function (data) {
+                            $('#WoqodLicensePlate').val(data.woqodLicensePlate);
+                            $('#OfflineLimit').val(data.fuelLimit);
+                        })
+                        .fail(function () {
+                            alert('Error loading vehicle details');
+                        });
+                }
+            });
+        });
+    </script>
+}

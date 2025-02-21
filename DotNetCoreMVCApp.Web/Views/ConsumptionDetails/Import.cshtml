@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Import Consumption Data";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>Import Consumption Data</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <a asp-action="DownloadTemplate" class="btn btn-success">
+                    <i class="fas fa-download"></i> Download Template
+                </a>
+            </div>
+
+            <form asp-action="Import" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="file" class="control-label">Select CSV File</label>
+                    <input type="file" name="file" id="file" class="form-control" accept=".csv" required />
+                </div>
+
+                <div class="alert alert-info mt-3">
+                    <h5>Import Notes:</h5>
+                    <ul>
+                        <li>File must be in CSV format</li>
+                        <li>Required fields: Product Name, Sale Time</li>
+                        <li>For Woqod imports: Missing license plates will be filled from WLicense Plate</li>
+                        <li>Invoice Month can be in format YYYYMMDD or MM/YYYY</li>
+                        <li>Sale Time format: MM/dd/yyyy HH:mm</li>
+                        <li>Numbers should use decimal point (.) not comma</li>
+                    </ul>
+                </div>
+
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary">Import</button>
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

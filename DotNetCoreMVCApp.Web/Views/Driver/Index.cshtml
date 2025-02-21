@@ -1,0 +1,300 @@
+﻿@model IEnumerable<DotNetCoreMVCApp.Models.Web.DriverViewModel>
+
+@{
+    ViewData["Title"] = "Manage Drivers";
+}
+
+<link href="~/datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
+
+<style>
+    .report-header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border-left: 5px solid #007bff;
+    }
+
+    .report-title {
+        color: #2c3e50;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .alert-success-green {
+        color: #ffffff;
+        background-color: #28a745;
+        border-color: #23923d;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: .25rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .action-buttons .btn {
+        margin-right: 5px;
+    }
+
+    .btn-toolbar {
+        margin-bottom: 1rem;
+    }
+
+        .btn-toolbar .btn {
+            margin-right: 10px;
+        }
+
+    .expired-date {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .warning-date {
+        color: #ffc107;
+        font-weight: bold;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .badge {
+        font-size: 85%;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="report-header">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="report-title">Driver Database Management</h1>
+            </div>
+            <div class="col-md-6 text-right">
+                <div class="btn-toolbar float-right">
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New Driver
+                    </a>
+                    <a asp-action="Import" class="btn btn-success">
+                        <i class="fas fa-file-import"></i> Import Drivers
+                    </a>
+                    <a asp-action="Export" class="btn btn-primary">Export</a>
+                    @* <a href="#" class="btn btn-info" onclick="exportToExcel()">
+                        <i class="fas fa-file-export"></i> Export
+                    </a> *@
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success-green">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="driverTable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Qatar ID</th>
+                            <th>Contact Number</th>
+                            <th>QID Expiry</th>
+                            <th>Nationality</th>
+                            <th>Date of Birth</th>
+                            @* <th>Created By</th>
+                            <th>Last Updated</th> *@
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var driver in Model)
+                        {
+                            <tr>
+                                <td>@driver.Id</td>
+                                <td>@driver.Name</td>
+                                <td>@driver.QatarId</td>
+                                <td>@driver.ContactNumber</td>
+                                <td class="@(IsExpiredOrWarning(driver.QIDExpiryDate))">
+                                    @driver.QIDExpiryDate.ToString("dd/MM/yyyy")
+                                    @if (IsExpired(driver.QIDExpiryDate))
+                                    {
+                                        <span class="badge badge-danger">Expired</span>
+                                    }
+                                    else if (IsWarning(driver.QIDExpiryDate))
+                                    {
+                                        <span class="badge badge-warning">Expiring Soon</span>
+                                    }
+                                </td>
+                                <td>@driver.Nationality</td>
+                                <td>@driver.DOB.ToString("dd/MM/yyyy")</td>
+                                @* <td>
+                                    @driver.CreatedBy<br />
+                                    <small class="text-muted">@driver.CreatedOn?.ToString("dd/MM/yyyy HH:mm")</small>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(driver.UpdatedBy))
+                                    {
+                                        @driver.UpdatedBy
+
+                                        <br />
+                                        <small class="text-muted">@driver.UpdatedOn?.ToString("dd/MM/yyyy HH:mm")</small>
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </td> *@
+                                <td>
+                                    <div class="action-buttons">
+                                        <a asp-action="Edit" asp-route-id="@driver.Id"
+                                           class="btn btn-sm btn-primary"
+                                           data-toggle="tooltip"
+                                           title="Edit Driver">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@driver.Id"
+                                           class="btn btn-sm btn-danger"
+                                           data-toggle="tooltip"
+                                           title="Delete Driver"
+                                           onclick="return confirm('Are you sure you want to delete this driver?');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/datatables/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('#driverTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "pageLength": 25,
+                "dom": 'Bfrtip',
+                "buttons": [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                "language": {
+                    "emptyTable": "No drivers available",
+                    "search": "Search:",
+                    "lengthMenu": "Show _MENU_ entries per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ drivers",
+                    "paginate": {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
+                    }
+                },
+                "order": [[0, "asc"]],
+                "columnDefs": [
+                    {
+                        "targets": -1,
+                        "orderable": false,
+                        "width": "100px"
+                    },
+                    {
+                        "targets": [4],  // QID Expiry column
+                        "render": function (data, type, row) {
+                            if (type === 'display') {
+                                var date = new Date(data);
+                                var today = new Date();
+                                var warningDate = new Date();
+                                warningDate.setMonth(today.getMonth() + 3);
+
+                                if (date < today) {
+                                    return '<span class="text-danger">' + data + ' <span class="badge badge-danger">Expired</span></span>';
+                                } else if (date < warningDate) {
+                                    return '<span class="text-warning">' + data + ' <span class="badge badge-warning">Expiring Soon</span></span>';
+                                }
+                            }
+                            return data;
+                        }
+                    }
+                ]
+            });
+
+            // Auto-hide success message
+            setTimeout(function () {
+                $(".alert-success-green").fadeOut("slow");
+            }, 5000);
+
+            // Initialize tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Add search delay to prevent too many searches while typing
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                var searchText = $('.dataTables_filter input').val().toLowerCase();
+                if (searchText.length < 3) return true; // Show all rows if search text is less than 3 characters
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].toLowerCase().includes(searchText)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        });
+
+        function exportToExcel() {
+            window.location.href = '@Url.Action("ExportToExcel", "Driver")';
+        }
+
+        // Helper functions for date checking
+        function isExpired(date) {
+            return new Date(date) < new Date();
+        }
+
+        function isWarning(date) {
+            var warningDate = new Date();
+            warningDate.setMonth(warningDate.getMonth() + 3);
+            var expiryDate = new Date(date);
+            return expiryDate > new Date() && expiryDate < warningDate;
+        }
+    </script>
+
+    @functions {
+    string IsExpiredOrWarning(DateTime date)
+    {
+        if (date < DateTime.Today)
+            return "expired-date";
+        if (date < DateTime.Today.AddMonths(3))
+            return "warning-date";
+        return "";
+    }
+
+    bool IsExpired(DateTime date)
+    {
+        return date < DateTime.Today;
+    }
+
+    bool IsWarning(DateTime date)
+    {
+        return date < DateTime.Today.AddMonths(3) && date >= DateTime.Today;
+    }
+    }
+}

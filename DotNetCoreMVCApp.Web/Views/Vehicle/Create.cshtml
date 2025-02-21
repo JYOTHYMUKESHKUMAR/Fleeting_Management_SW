@@ -1,0 +1,285 @@
+﻿@model DotNetCoreMVCApp.Models.Repository.Vehicle
+@{
+    ViewData["Title"] = "Create Vehicle";
+}
+
+<style>
+    .button-container {
+        position: relative;
+        padding-top: 20px;
+    }
+
+    .btn-top-right {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+</style>
+
+<div class="button-container">
+    <a asp-action="Index" class="btn btn-secondary btn-top-right">Back to List</a>
+</div>
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Create Vehicle</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card card-secondary">
+                    <div class="card-header">
+                        <h3 class="card-title">Enter Vehicle Details</h3>
+                    </div>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach (var modelState in ViewData.ModelState.Values)
+                                {
+                                    foreach (var error in modelState.Errors)
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post" id="createVehicleForm">
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="form-group">
+                                <label asp-for="VehicleId" class="control-label">Vehicle ID *</label>
+                                <input asp-for="VehicleId" class="form-control" required
+                                       data-val="true"
+                                       data-val-required="Vehicle ID is required" />
+                                <span asp-validation-for="VehicleId" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="LicensePlate" class="control-label">License Plate *</label>
+                                <input asp-for="LicensePlate" class="form-control" required
+                                       data-val="true"
+                                       data-val-required="License Plate is required" />
+                                <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="WoqodLicensePlate" class="control-label">Woqod License Plate *</label>
+                                <input asp-for="WoqodLicensePlate" class="form-control" required
+                                       data-val="true"
+                                       data-val-required="Woqod License Plate is required" />
+                                <span asp-validation-for="WoqodLicensePlate" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="GPSCode" class="control-label">GPS Code *</label>
+                                <input asp-for="GPSCode" class="form-control" required
+                                       data-val="true"
+                                       data-val-required="GPS Code is required" />
+                                <span asp-validation-for="GPSCode" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="VehicleType" class="control-label">Vehicle Type *</label>
+                                <select asp-for="VehicleType" class="form-control" required
+                                        asp-items="@(new SelectList(DotNetCoreMVCApp.Models.Repository.VehicleTypeHelper.GetAllTypes()))"
+                                        data-val="true"
+                                        data-val-required="Vehicle Type is required">
+                                    <option value="">-- Select Vehicle Type --</option>
+                                </select>
+                                <span asp-validation-for="VehicleType" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="VehicleBrand" class="control-label">Vehicle Brand *</label>
+                                <input asp-for="VehicleBrand" class="form-control" required
+                                       data-val="true"
+                                       data-val-required="Vehicle Brand is required" />
+                                <span asp-validation-for="VehicleBrand" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="VehicleModel" class="control-label">Vehicle Model *</label>
+                                <input asp-for="VehicleModel" class="form-control" required
+                                       data-val="true"
+                                       data-val-required="Vehicle Model is required" />
+                                <span asp-validation-for="VehicleModel" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Year" class="control-label">Year *</label>
+                                <input asp-for="Year" class="form-control" required type="number" min="1900" max="@DateTime.Now.Year"
+                                       data-val="true"
+                                       data-val-required="Year is required"
+                                       data-val-range="Year must be between 1900 and current year"
+                                       data-val-range-min="1900"
+                                       data-val-range-max="@DateTime.Now.Year" />
+                                <span asp-validation-for="Year" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="FuelTankCapacity" class="control-label">Fuel Tank Capacity (L) *</label>
+                                <input asp-for="FuelTankCapacity" class="form-control" required type="number" step="0.01" min="0" max="2000"
+                                       data-val="true"
+                                       data-val-required="Fuel Tank Capacity is required"
+                                       data-val-range="Fuel Tank Capacity must be between 0 and 2000 liters"
+                                       data-val-range-min="0"
+                                       data-val-range-max="2000" />
+                                <span asp-validation-for="FuelTankCapacity" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="FuelLimit" class="control-label">Fuel Limit (L) *</label>
+                                <input asp-for="FuelLimit" class="form-control" required type="number" step="0.01" min="0" max="2000"
+                                       data-val="true"
+                                       data-val-required="Fuel Limit is required"
+                                       data-val-range="Fuel Limit must be between 0 and 2000 liters"
+                                       data-val-range-min="0"
+                                       data-val-range-max="2000" />
+                                <span asp-validation-for="FuelLimit" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="RegistrationExpiryDate" class="control-label">Registration Expiry Date *</label>
+                                <input asp-for="RegistrationExpiryDate" class="form-control" required type="date"
+                                       data-val="true"
+                                       data-val-required="Registration Expiry Date is required" />
+                                <span asp-validation-for="RegistrationExpiryDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="InsurancePolicyNo" class="control-label">Insurance Policy No *</label>
+                                <input asp-for="InsurancePolicyNo" class="form-control" required
+                                       data-val="true"
+                                       data-val-required="Insurance Policy Number is required"
+                                       maxlength="50" />
+                                <span asp-validation-for="InsurancePolicyNo" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="InsurancePolicyExpiry" class="control-label">Insurance Policy Expiry *</label>
+                                <input asp-for="InsurancePolicyExpiry" class="form-control" required type="date"
+                                       data-val="true"
+                                       data-val-required="Insurance Policy Expiry Date is required" />
+                                <span asp-validation-for="InsurancePolicyExpiry" class="text-danger"></span>
+                            </div>
+
+                            <p><small class="text-muted">* Required fields</small></p>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // Enable client-side validation
+            $.validator.unobtrusive.parse("#createVehicleForm");
+
+            // Add custom validation for Vehicle ID, License Plates and GPS Code
+            $.validator.addMethod("alphanumeric", function (value, element) {
+                return this.optional(element) || /^[a-zA-Z0-9-]+$/.test(value);
+            }, "Please enter only letters, numbers, and hyphens");
+
+            $("#VehicleId, #LicensePlate, #WoqodLicensePlate").rules("add", {
+                alphanumeric: true,
+                maxlength: 20
+            });
+
+            $("#GPSCode").rules("add", {
+                alphanumeric: true,
+                maxlength: 50
+            });
+
+            // Add validation for Insurance Policy Number
+            $("#InsurancePolicyNo").rules("add", {
+                required: true,
+                maxlength: 50,
+                messages: {
+                    required: "Insurance Policy Number is required",
+                    maxlength: "Insurance Policy Number cannot exceed 50 characters"
+                }
+            });
+
+            // Add custom validation for numeric fields
+            $("#FuelTankCapacity, #FuelLimit").rules("add", {
+                required: true,
+                number: true,
+                range: [0, 2000],
+                messages: {
+                    required: "This field is required",
+                    number: "Please enter a valid number",
+                    range: "Value must be between 0 and 2000 liters"
+                }
+            });
+
+            // Add validation for Year
+            $("#Year").rules("add", {
+                required: true,
+                number: true,
+                range: [1900, new Date().getFullYear()],
+                messages: {
+                    required: "Year is required",
+                    number: "Please enter a valid year",
+                    range: "Year must be between 1900 and current year"
+                }
+            });
+
+            // Validate FuelLimit against FuelTankCapacity
+            $("#createVehicleForm").on("submit", function (e) {
+                const tankCapacity = parseFloat($("#FuelTankCapacity").val());
+                const fuelLimit = parseFloat($("#FuelLimit").val());
+
+                if (fuelLimit > tankCapacity) {
+                    e.preventDefault();
+                    alert("Fuel limit cannot exceed fuel tank capacity");
+                    return false;
+                }
+
+                // Format inputs before submission
+                $("#VehicleId").val($("#VehicleId").val().trim().toUpperCase());
+                $("#LicensePlate").val($("#LicensePlate").val().trim().toUpperCase());
+                $("#WoqodLicensePlate").val($("#WoqodLicensePlate").val().trim().toUpperCase());
+                $("#GPSCode").val($("#GPSCode").val().trim());
+                $("#VehicleBrand").val($("#VehicleBrand").val().trim());
+                $("#VehicleModel").val($("#VehicleModel").val().trim());
+                $("#InsurancePolicyNo").val($("#InsurancePolicyNo").val().trim());
+            });
+
+            // Auto-format inputs to uppercase
+            $("#VehicleId, #LicensePlate, #WoqodLicensePlate").on("input", function () {
+                $(this).val($(this).val().toUpperCase());
+            });
+
+            // Format numeric fields to 2 decimal places on blur
+            $("#FuelTankCapacity, #FuelLimit").on("blur", function () {
+                const value = $(this).val();
+                if (value) {
+                    $(this).val(parseFloat(value).toFixed(2));
+                }
+            });
+        });
+    </script>
+}
