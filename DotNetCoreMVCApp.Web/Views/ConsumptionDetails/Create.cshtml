@@ -1,10 +1,11 @@
 ﻿@model DotNetCoreMVCApp.Models.Web.ConsumptionDetailsCreateViewModel
-@{
+@* @{
     ViewData["Title"] = "Create Consumption Detail";
 }
-
+ *@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+<link href="~/css/forms.css" rel="stylesheet" />
 
 <style>
     .button-container {
@@ -55,7 +56,6 @@
 
     .input-validation-error {
         border-color: #dc3545;
-
     }
 
     .select2-container--bootstrap4 .select2-selection--single {
@@ -64,212 +64,289 @@
     }
 
     .select2-container--bootstrap4.select2-container--focus .select2-selection--single {
-        border-color: #80bdff !important;
-        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25) !important;
+        border-color: var(--navy-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 51, 102, 0.25) !important;
     }
 
     /* For validation states */
     .input-validation-error + .select2-container--bootstrap4 .select2-selection--single {
         border-color: #dc3545 !important;
     }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 
-<div class="button-container">
-    <a asp-action="Index" class="btn btn-secondary btn-top-right">Back to List</a>
-</div>
-
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Create Consumption Detail</h1>
-            </div>
+<!-- Container-fluid with padding -->
+<div class="container-fluid py-4">
+    <!-- Page Title -->
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Create Consumption Detail</h1>
         </div>
     </div>
-</section>
 
-<section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-secondary">
-                    <div class="card-header">
-                        <h3 class="card-title">Enter Consumption Details</h3>
-                    </div>
+    <!-- Main Content -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-navy text-white">
+            <h3 class="mb-0"><i class="fas fa-gas-pump me-2"></i>Enter Consumption Details</h3>
+        </div>
 
-                    @if (!ViewData.ModelState.IsValid)
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var modelState in ViewData.ModelState.Values)
                     {
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach (var modelState in ViewData.ModelState.Values)
-                                {
-                                    foreach (var error in modelState.Errors)
-                                    {
-                                        <li>@error.ErrorMessage</li>
-                                    }
-                                }
-                            </ul>
-                        </div>
+                        foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
                     }
+                </ul>
+            </div>
+        }
 
-                    <form asp-action="Create" method="post" id="createConsumptionForm">
-                        @Html.AntiForgeryToken()
-                        <div class="card-body">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label asp-for="LicensePlate" class="control-label">License Plate *</label>
-                                        <select asp-for="LicensePlate" class="form-control select2bs4" required
+        <div class="card-body bg-light">
+            <form asp-action="Create" method="post" id="createConsumptionForm">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Vehicle Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="LicensePlate" class="form-label text-navy fw-bold">License Plate *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-car"></i></span>
+                                        <select asp-for="LicensePlate" class="form-select border-navy" required
                                                 asp-items="Model.LicensePlateList"
                                                 data-val="true"
                                                 data-val-required="License Plate is required">
                                             <option value="">-- Select License Plate --</option>
                                         </select>
-                                        <span asp-validation-for="LicensePlate" class="text-danger"></span>
                                     </div>
+                                    <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label asp-for="WoqodLicensePlate" class="control-label">Woqod License Plate</label>
-                                        <input asp-for="WoqodLicensePlate" class="form-control" readonly />
-                                        <span asp-validation-for="WoqodLicensePlate" class="text-danger"></span>
-                                    </div>
+                                <div class="mb-3">
+                                    <label asp-for="WoqodLicensePlate" class="form-label text-navy fw-bold">Woqod License Plate</label>
+                                    <input asp-for="WoqodLicensePlate" class="form-control border-navy" readonly />
+                                    <span asp-validation-for="WoqodLicensePlate" class="text-danger"></span>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label asp-for="DriverId" class="control-label">Driver *</label>
-                                        <select asp-for="DriverId" class="form-control select2bs4" required
+                                <div class="mb-3">
+                                    <label asp-for="DriverId" class="form-label text-navy fw-bold">Driver *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-user"></i></span>
+                                        <select asp-for="DriverId" class="form-select border-navy" required
                                                 asp-items="Model.DriverList"
                                                 data-val="true"
                                                 data-val-required="Driver is required">
                                             <option value="">-- Select Driver --</option>
                                         </select>
-                                        <span asp-validation-for="DriverId" class="text-danger"></span>
                                     </div>
+                                    <span asp-validation-for="DriverId" class="text-danger"></span>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label asp-for="ProductName" class="control-label">Product Name *</label>
-                                        <select asp-for="ProductName" class="form-control select2bs4" required
+                                <div class="mb-3">
+                                    <label asp-for="ProductName" class="form-label text-navy fw-bold">Product Name *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-gas-pump"></i></span>
+                                        <select asp-for="ProductName" class="form-select border-navy" required
                                                 asp-items="Model.ProductNameList"
                                                 data-val="true"
                                                 data-val-required="Product Name is required">
                                             <option value="">-- Select Product --</option>
                                         </select>
-                                        <span asp-validation-for="ProductName" class="text-danger"></span>
                                     </div>
+                                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label asp-for="OfflineLimit" class="control-label">Offline Limit (L) *</label>
-                                        <input asp-for="OfflineLimit" class="form-control" required readonly
+                                <div class="mb-3">
+                                    <label asp-for="OfflineLimit" class="form-label text-navy fw-bold">Offline Limit (L) *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-tachometer-alt"></i></span>
+                                        <input asp-for="OfflineLimit" class="form-control border-navy" required readonly
                                                type="number" step="0.01" min="0" max="2000"
                                                data-val="true"
                                                data-val-required="Offline Limit is required" />
-                                        <span asp-validation-for="OfflineLimit" class="text-danger"></span>
                                     </div>
-
-                                    <div class="form-group">
-                                        <label asp-for="SaleTime" class="control-label">Sale Time *</label>
-                                        <input asp-for="SaleTime" class="form-control" required type="datetime-local"
-                                               data-val="true"
-                                               data-val-required="Sale Time is required" />
-                                        <span asp-validation-for="SaleTime" class="text-danger"></span>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label asp-for="InvoiceMonth" class="control-label">Invoice Month *</label>
-                                        <input type="month" id="invoiceMonthPicker" class="form-control" required />
-                                        <input asp-for="InvoiceMonth" type="hidden" />
-                                        <span asp-validation-for="InvoiceMonth" class="text-danger"></span>
-                                    </div>
+                                    <span asp-validation-for="OfflineLimit" class="text-danger"></span>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label asp-for="FuelQuantity" class="control-label">Fuel Quantity (L) *</label>
-                                        <input asp-for="FuelQuantity" class="form-control calc-input" required
+                                <div class="mb-3">
+                                    <label asp-for="SaleTime" class="form-label text-navy fw-bold">Sale Time *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-calendar"></i></span>
+                                        <input asp-for="SaleTime" class="form-control border-navy" required type="datetime-local"
+                                               data-val="true"
+                                               data-val-required="Sale Time is required" />
+                                    </div>
+                                    <span asp-validation-for="SaleTime" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="InvoiceMonth" class="form-label text-navy fw-bold">Invoice Month *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-file-invoice"></i></span>
+                                        <input type="month" id="invoiceMonthPicker" class="form-control border-navy" required />
+                                    </div>
+                                    <input asp-for="InvoiceMonth" type="hidden" />
+                                    <span asp-validation-for="InvoiceMonth" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Cost Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="FuelQuantity" class="form-label text-navy fw-bold">Fuel Quantity (L) *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-fill-drip"></i></span>
+                                        <input asp-for="FuelQuantity" class="form-control border-navy calc-input" required
                                                type="number" step="0.01" min="0" max="2000"
                                                data-val="true"
                                                data-val-required="Fuel Quantity is required" />
-                                        <span asp-validation-for="FuelQuantity" class="text-danger"></span>
                                     </div>
+                                    <span asp-validation-for="FuelQuantity" class="text-danger"></span>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label asp-for="UnitPrice" class="control-label">Unit Price *</label>
-                                        <input asp-for="UnitPrice" class="form-control calc-input" required
+                                <div class="mb-3">
+                                    <label asp-for="UnitPrice" class="form-label text-navy fw-bold">Unit Price *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-dollar-sign"></i></span>
+                                        <input asp-for="UnitPrice" class="form-control border-navy calc-input" required
                                                type="number" step="0.01" min="0"
                                                data-val="true"
                                                data-val-required="Unit Price is required" />
-                                        <span asp-validation-for="UnitPrice" class="text-danger"></span>
                                     </div>
+                                    <span asp-validation-for="UnitPrice" class="text-danger"></span>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label asp-for="TotalCost" class="control-label">Total Cost</label>
-                                        <input asp-for="TotalCost" class="form-control" readonly
+                                <div class="mb-3">
+                                    <label asp-for="TotalCost" class="form-label text-navy fw-bold">Total Cost</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-coins"></i></span>
+                                        <input asp-for="TotalCost" class="form-control border-navy" readonly
                                                type="number" step="0.01" min="0" />
-                                        <span asp-validation-for="TotalCost" class="text-danger"></span>
                                     </div>
+                                    <span asp-validation-for="TotalCost" class="text-danger"></span>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label asp-for="StationName" class="control-label">Station Name</label>
-                                        <input asp-for="StationName" class="form-control" maxlength="50" />
-                                        <span asp-validation-for="StationName" class="text-danger"></span>
+                                <div class="mb-3">
+                                    <label asp-for="StationName" class="form-label text-navy fw-bold">Station Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-charging-station"></i></span>
+                                        <input asp-for="StationName" class="form-control border-navy" maxlength="50" />
                                     </div>
+                                    <span asp-validation-for="StationName" class="text-danger"></span>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label asp-for="GroupName" class="control-label">Group Name</label>
-                                        <input asp-for="GroupName" class="form-control" maxlength="50" />
-                                        <span asp-validation-for="GroupName" class="text-danger"></span>
+                                <div class="mb-3">
+                                    <label asp-for="GroupName" class="form-label text-navy fw-bold">Group Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-users"></i></span>
+                                        <input asp-for="GroupName" class="form-control border-navy" maxlength="50" />
                                     </div>
+                                    <span asp-validation-for="GroupName" class="text-danger"></span>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label asp-for="FleetName" class="control-label">Fleet Name</label>
-                                        <input asp-for="FleetName" class="form-control" maxlength="50" />
-                                        <span asp-validation-for="FleetName" class="text-danger"></span>
+                                <div class="mb-3">
+                                    <label asp-for="FleetName" class="form-label text-navy fw-bold">Fleet Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-truck-moving"></i></span>
+                                        <input asp-for="FleetName" class="form-control border-navy" maxlength="50" />
                                     </div>
+                                    <span asp-validation-for="FleetName" class="text-danger"></span>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label asp-for="CostCenter" class="control-label">Cost Center</label>
-                                        <input asp-for="CostCenter" class="form-control" maxlength="500" />
-                                        <span asp-validation-for="CostCenter" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label asp-for="OdometerReading" class="control-label">Odometer Reading</label>
-                                        <input asp-for="OdometerReading" class="form-control" type="number" step="0.01" min="0" />
-                                        <span asp-validation-for="OdometerReading" class="text-danger"></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="Remarks" class="control-label">Remarks</label>
-                                <textarea asp-for="Remarks" class="form-control" maxlength="500" rows="3"></textarea>
-                                <span asp-validation-for="Remarks" class="text-danger"></span>
-                            </div>
-
-                            <p><small class="text-muted">* Required fields</small></p>
                         </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Create</button>
-                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    </div>
+
+                    <!-- Additional Information Section -->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Additional Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="CostCenter" class="form-label text-navy fw-bold">Cost Center</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-navy text-white"><i class="fas fa-building"></i></span>
+                                                <input asp-for="CostCenter" class="form-control border-navy" maxlength="500" />
+                                            </div>
+                                            <span asp-validation-for="CostCenter" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="OdometerReading" class="form-label text-navy fw-bold">Odometer Reading</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-navy text-white"><i class="fas fa-tachometer-alt"></i></span>
+                                                <input asp-for="OdometerReading" class="form-control border-navy" type="number" step="0.01" min="0" />
+                                            </div>
+                                            <span asp-validation-for="OdometerReading" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Remarks" class="form-label text-navy fw-bold">Remarks</label>
+                                    <textarea asp-for="Remarks" class="form-control border-navy" maxlength="500" rows="3"></textarea>
+                                    <span asp-validation-for="Remarks" class="text-danger"></span>
+                                </div>
+
+                                <p><small class="text-muted">* Required fields</small></p>
+                            </div>
                         </div>
-                    </form>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </a>
+                                    <button type="submit" class="btn btn-navy">
+                                        <i class="fas fa-save me-1"></i>Create
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-</section>
+</div>
 
 <!-- Confirmation Modal -->
 <div class="modal fade" id="saveConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="saveConfirmationModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-navy text-white">
                 <h5 class="modal-title" id="saveConfirmationModalLabel">Confirm Consumption Details</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -279,20 +356,20 @@
                 <div class="confirmation-details">
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>License Plate:</strong><br/> <span id="confirm-license"></span></p>
-                            <p><strong>Driver:</strong><br/> <span id="confirm-driver"></span></p>
-                            <p><strong>Product:</strong><br/> <span id="confirm-product"></span></p>
+                            <p><strong class="text-navy">License Plate:</strong><br /> <span id="confirm-license"></span></p>
+                            <p><strong class="text-navy">Driver:</strong><br /> <span id="confirm-driver"></span></p>
+                            <p><strong class="text-navy">Product:</strong><br /> <span id="confirm-product"></span></p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Quantity:</strong><br/> <span id="confirm-quantity"></span> L</p>
-                            <p><strong>Unit Price:</strong><br/> QAR <span id="confirm-unit-price"></span></p>
-                            <p><strong>Total Cost:</strong><br/> QAR <span id="confirm-cost"></span></p>
+                            <p><strong class="text-navy">Quantity:</strong><br /> <span id="confirm-quantity"></span> L</p>
+                            <p><strong class="text-navy">Unit Price:</strong><br /> QAR <span id="confirm-unit-price"></span></p>
+                            <p><strong class="text-navy">Total Cost:</strong><br /> QAR <span id="confirm-cost"></span></p>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <p><strong>Sale Time:</strong><br/> <span id="confirm-sale-time"></span></p>
-                            <p><strong>Station Name:</strong><br/> <span id="confirm-station"></span></p>
+                            <p><strong class="text-navy">Sale Time:</strong><br /> <span id="confirm-sale-time"></span></p>
+                            <p><strong class="text-navy">Station Name:</strong><br /> <span id="confirm-station"></span></p>
                         </div>
                     </div>
                 </div>
@@ -300,7 +377,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmSave">Confirm & Save</button>
+                <button type="button" class="btn btn-navy" id="confirmSave">Confirm & Save</button>
             </div>
         </div>
     </div>

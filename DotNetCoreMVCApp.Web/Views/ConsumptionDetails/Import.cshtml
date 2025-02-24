@@ -2,41 +2,149 @@
     ViewData["Title"] = "Import Consumption Data";
 }
 
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h4>Import Consumption Data</h4>
+<link href="~/css/forms.css" rel="stylesheet" />
+
+<style>
+    /* Loading overlay */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--navy-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    
+    
+</style>
+
+<!-- Container-fluid with padding -->
+<div class="container-fluid py-4">
+    <!-- Page Title -->
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Import Consumption Data</h1>
         </div>
-        <div class="card-body">
-            <div class="mb-4">
-                <a asp-action="DownloadTemplate" class="btn btn-success">
-                    <i class="fas fa-download"></i> Download Template
-                </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-navy text-white">
+            <h3 class="mb-0"><i class="fas fa-file-import me-2"></i>Upload CSV File</h3>
+        </div>
+        <div class="card-body bg-light">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <!-- Download Template Button -->
+                    <div class="mb-4 text-center">
+                        <a asp-action="DownloadTemplate" class="btn btn-navy">
+                            <i class="fas fa-download me-1"></i> Download Template
+                        </a>
+                        <p class="text-muted mt-2 small">Use this template for proper data formatting</p>
+                    </div>
+
+                    <!-- Upload Form -->
+                    <form asp-action="Import" method="post" enctype="multipart/form-data" id="importForm">
+                        <div class="card mb-4">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Upload File</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="file" class="form-label text-navy fw-bold">Select CSV File</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-file-csv"></i></span>
+                                        <input type="file" name="file" id="file" class="form-control border-navy" accept=".csv" required />
+                                    </div>
+                                    <div class="form-text">Only CSV files are supported</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Import Guidelines -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Import Guidelines</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info border-navy bg-navy-bold">
+                                    <ul class="mb-0">
+                                        <li>File must be in <strong>CSV format</strong></li>
+                                        <li><strong>Required fields:</strong> Product Name, Sale Time</li>
+                                        <li>For Woqod imports: Missing license plates will be filled from WLicense Plate</li>
+                                        <li><strong>Invoice Month</strong> can be in format YYYYMMDD or MM/YYYY</li>
+                                        <li><strong>Sale Time format:</strong> MM/dd/yyyy HH:mm</li>
+                                        <li>Numbers should use decimal point (.) not comma</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                                    </a>
+                                    <button type="submit" class="btn btn-navy">
+                                        <i class="fas fa-upload me-1"></i>Import
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <form asp-action="Import" method="post" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="file" class="control-label">Select CSV File</label>
-                    <input type="file" name="file" id="file" class="form-control" accept=".csv" required />
-                </div>
-
-                <div class="alert alert-info mt-3">
-                    <h5>Import Notes:</h5>
-                    <ul>
-                        <li>File must be in CSV format</li>
-                        <li>Required fields: Product Name, Sale Time</li>
-                        <li>For Woqod imports: Missing license plates will be filled from WLicense Plate</li>
-                        <li>Invoice Month can be in format YYYYMMDD or MM/YYYY</li>
-                        <li>Sale Time format: MM/dd/yyyy HH:mm</li>
-                        <li>Numbers should use decimal point (.) not comma</li>
-                    </ul>
-                </div>
-
-                <div class="form-group mt-3">
-                    <button type="submit" class="btn btn-primary">Import</button>
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                </div>
-            </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Add form submission handler to show a loading indicator
+            $('#importForm').on('submit', function() {
+                // Show loading overlay with message
+                $('body').append('<div class="overlay"><div class="spinner"></div><div class="text-white mt-3">Importing data, please wait...</div></div>');
+                return true;
+            });
+            
+            // Simple file validation
+            $('#file').on('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const fileType = file.name.split('.').pop().toLowerCase();
+                    if (fileType !== 'csv') {
+                        alert('Please upload a CSV file');
+                        $(this).val('');
+                    }
+                }
+            });
+        });
+    </script>
+}

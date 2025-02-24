@@ -1,0 +1,170 @@
+/* forms.css */
+:root {
+    --navy-primary: #003366;
+    --navy-light: #E5F0FF;
+    --navy-hover: #002347;
+}
+
+/* Background Colors */
+.bg-navy {
+    background-color: var(--navy-primary) !important;
+}
+
+.bg-navy-light {
+    background-color: var(--navy-light) !important;
+}
+
+/* Text Colors */
+.text-navy:not(.bg-navy *) {
+    color: var(--navy-primary) !important;
+}
+
+/* Border Colors */
+.border-navy {
+    border-color: var(--navy-primary) !important;
+}
+
+/* Button Styles */
+.btn-navy {
+    background-color: var(--navy-primary) !important;
+    border-color: var(--navy-primary) !important;
+    color: white !important;
+}
+
+    .btn-navy:hover {
+        background-color: var(--navy-hover) !important;
+        border-color: var(--navy-hover) !important;
+        color: white !important;
+    }
+
+/* Form Control Focus */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--navy-primary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(0, 51, 102, 0.25) !important;
+}
+
+/* Card Styling */
+.card-header.bg-navy,
+.card-header.bg-navy h3,
+.card-header.bg-navy h5 {
+    color: white !important;
+    background-color: var(--navy-primary) !important;
+}
+
+/* Modal Styling */
+.modal-header.bg-navy {
+    color: white !important;
+    background-color: var(--navy-primary) !important;
+}
+
+/* Table Headers */
+.table thead th {
+    background-color: var(--navy-primary) !important;
+    color: white !important;
+}
+
+/* Input Groups */
+.input-group-text.bg-navy {
+    background-color: var(--navy-primary) !important;
+    color: white !important;
+    border-color: var(--navy-primary) !important;
+}
+
+/* Form Labels */
+.form-label.text-navy {
+    font-weight: bold !important;
+    color: var(--navy-primary) !important;
+}
+
+/* Table Accent Colors */
+.table-hover tbody tr:hover {
+    background-color: var(--navy-light) !important;
+}
+
+/* Override any existing navy styles */
+.bg-navy {
+    background-color: var(--navy-primary) !important;
+}
+
+.bg-navy-light {
+    background-color: var(--navy-light) !important;
+}
+
+.text-navy:not(.bg-navy *):not(.bg-navy *) {
+    color: var(--navy-primary) !important;
+}
+
+.border-navy {
+    border-color: var(--navy-primary) !important;
+}
+
+.btn-navy {
+    background-color: var(--navy-primary) !important;
+    border-color: var(--navy-primary) !important;
+    color: white !important;
+}
+
+    .btn-navy:hover {
+        background-color: var(--navy-hover) !important;
+        border-color: var(--navy-hover) !important;
+        color: white !important;
+    }
+
+/* Additional common form styles */
+.modal .close {
+    color: white !important;
+}
+
+.card-header.bg-navy-light,
+.card-header.bg-navy-light {
+    background-color: var(--navy-light) !important;
+}
+
+.input-group .form-control:focus {
+    z-index: 1;
+}
+
+/* Table specific overrides */
+.table thead.bg-navy-light,
+.table thead.bg-navy-light {
+    background-color: var(--navy-light) !important;
+}
+
+/* Ensure proper text contrast */
+.bg-navy *,
+[class*="bg-navy"] h1,
+[class*="bg-navy"] h2,
+[class*="bg-navy"] h3,
+[class*="bg-navy"] h4,
+[class*="bg-navy"] h5,
+[class*="bg-navy"] h6,
+[class*="bg-navy"] .mb-0 {
+    color: white !important;
+}
+
+[class*="bg-navy-light"] {
+    color: var(--navy-primary) !important;
+}
+
+/* Header text colors in cards */
+.card-header:not(.bg-navy):not(.bg-navy) h5.mb-0 {
+    color: var(--navy-primary) !important;
+}
+
+/* Basic Information and Additional Details headers */
+.card-header h5.mb-0.text-navy,
+.card-header h5.mb-0.text-navy {
+    color: var(--navy-primary) !important;
+}
+
+.bg-navy h3.mb-0,
+.bg-navy h3.mb-0 {
+    color: white !important;
+}
+
+/* Section headings in light backgrounds */
+.bg-navy-light h5.mb-0,
+.bg-navy-light h5.mb-0 {
+    color: var(--navy-primary) !important;
+}

@@ -16,6 +16,8 @@ namespace DotNetCoreMVCApp.Repository.Implementation
         
         private GenericRepository<Vehicle> _vehicleRepository;
         private GenericRepository<ConsumptionDetails> _consumptiondetailsRepository;
+        private GenericRepository<OilInformation> _oilinformationRepository;
+        private GenericRepository<TireInformation> _tireinformationRepository;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -59,6 +61,31 @@ namespace DotNetCoreMVCApp.Repository.Implementation
                     _consumptiondetailsRepository = new GenericRepository<ConsumptionDetails>(_context);
                 }
                 return _consumptiondetailsRepository;
+            }
+        }
+
+        public GenericRepository<TireInformation> TireInformationRepository
+        {
+            get
+            {
+
+                if (_tireinformationRepository == null)
+                {
+                    _tireinformationRepository = new GenericRepository<TireInformation>(_context);
+                }
+                return _tireinformationRepository;
+            }
+        }
+        public GenericRepository<OilInformation> OilInformationRepository
+        {
+            get
+            {
+
+                if (_oilinformationRepository == null)
+                {
+                    _oilinformationRepository = new GenericRepository<OilInformation>(_context);
+                }
+                return _oilinformationRepository;
             }
         }
         public async Task SaveAsync()

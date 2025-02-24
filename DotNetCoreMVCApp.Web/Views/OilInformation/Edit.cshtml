@@ -1,0 +1,315 @@
+﻿@model DotNetCoreMVCApp.Models.Web.OilInformationViewModel
+@{
+    ViewData["Title"] = "Edit Oil Information";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+<link href="~/css/forms.css" rel="stylesheet" />
+
+<style>
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+        box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    }
+
+    .validation-summary-errors {
+        color: #dc3545;
+        padding: 10px;
+        margin-bottom: 1rem;
+        border: 1px solid #dc3545;
+        border-radius: 4px;
+        background-color: #f8d7da;
+    }
+
+    .field-validation-error {
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+
+    .input-validation-error {
+        border-color: #dc3545;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--single {
+        border: 1px solid #ced4da !important;
+        height: calc(2.25rem + 2px) !important;
+    }
+
+    .select2-container--bootstrap4.select2-container--focus .select2-selection--single {
+        border-color: var(--navy-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 51, 102, 0.25) !important;
+    }
+
+    /* For validation states */
+    .input-validation-error + .select2-container--bootstrap4 .select2-selection--single {
+        border-color: #dc3545 !important;
+    }
+
+    /* Loading overlay */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--navy-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<!-- Container-fluid with padding -->
+<div class="container-fluid py-4">
+    <!-- Page Title -->
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Edit Oil Information</h1>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-navy text-white">
+            <h3 class="mb-0"><i class="fas fa-oil-can me-2"></i>Update Oil Information</h3>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var modelState in ViewData.ModelState.Values)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+
+        <div class="card-body bg-light">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row g-3">
+                    <!-- Vehicle Information -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Vehicle & Oil Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group mb-3">
+                                    <label asp-for="LicensePlate" class="form-label text-navy fw-bold">License Plate <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-car"></i></span>
+                                        <select asp-for="LicensePlate" class="form-control select2bs4" required
+                                                asp-items="Model.LicensePlateList"
+                                                data-val="true"
+                                                data-val-required="License Plate is required">
+                                            <option value="">-- Select License Plate --</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="OilType" class="form-label text-navy fw-bold">Oil Type <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-filter"></i></span>
+                                        <select asp-for="OilType" class="form-control select2bs4" required
+                                                asp-items="Model.OilTypeList">
+                                            <option value="">-- Select Oil Type --</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="OilType" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="OilBrand" class="form-label text-navy fw-bold">Oil Brand <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-tag"></i></span>
+                                        <input asp-for="OilBrand" class="form-control" required maxlength="50" />
+                                    </div>
+                                    <span asp-validation-for="OilBrand" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="OilPrice" class="form-label text-navy fw-bold">Oil Price <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-dollar-sign"></i></span>
+                                        <input asp-for="OilPrice" class="form-control" required
+                                               type="number" step="0.01" min="0"
+                                               data-val="true"
+                                               data-val-required="Oil Price is required" />
+                                    </div>
+                                    <span asp-validation-for="OilPrice" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Odometer Information -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Maintenance Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group mb-3">
+                                    <label asp-for="CurrentOdometer" class="form-label text-navy fw-bold">Current Odometer <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-tachometer-alt"></i></span>
+                                        <input asp-for="CurrentOdometer" class="form-control calc-input" required
+                                               type="number" step="0.01" min="0"
+                                               data-val="true"
+                                               data-val-required="Current Odometer is required" />
+                                    </div>
+                                    <span asp-validation-for="CurrentOdometer" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="NextOilChangeOdometer" class="form-label text-navy fw-bold">Next Oil Change Odometer <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-road"></i></span>
+                                        <input asp-for="NextOilChangeOdometer" class="form-control calc-input" required
+                                               type="number" step="0.01" min="0"
+                                               data-val="true"
+                                               data-val-required="Next Oil Change Odometer is required" />
+                                    </div>
+                                    <span asp-validation-for="NextOilChangeOdometer" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="OilChangeDate" class="form-label text-navy fw-bold">Oil Change Date <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-calendar"></i></span>
+                                        <input asp-for="OilChangeDate" class="form-control" required
+                                               type="datetime-local" />
+                                    </div>
+                                    <span asp-validation-for="OilChangeDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Notes" class="form-label text-navy fw-bold">Notes</label>
+                                    <textarea asp-for="Notes" class="form-control" maxlength="500" rows="3"></textarea>
+                                    <span asp-validation-for="Notes" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </a>
+                                    <button type="submit" class="btn btn-navy">
+                                        <i class="fas fa-save me-1"></i>Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            // Initialize Select2 for dropdowns with search
+            $('.select2bs4').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Select an option'
+            });
+
+            // Format numeric fields to 2 decimal places on blur
+            $("#OilPrice, #CurrentOdometer, #NextOilChangeOdometer").on("blur", function () {
+                const value = $(this).val();
+                if (value) {
+                    $(this).val(parseFloat(value).toFixed(2));
+                }
+            });
+
+            // Validate next oil change odometer
+            $("#NextOilChangeOdometer").on("input", function () {
+                const currentOdometer = parseFloat($("#CurrentOdometer").val()) || 0;
+                const nextOdometer = parseFloat($(this).val()) || 0;
+
+                if (nextOdometer <= currentOdometer) {
+                    toastr.warning("Next oil change odometer should be greater than current odometer");
+                }
+            });
+
+            // Form validation
+            $('form').on('submit', function (e) {
+                const currentOdometer = parseFloat($("#CurrentOdometer").val());
+                const nextOdometer = parseFloat($("#NextOilChangeOdometer").val());
+
+                if (nextOdometer <= currentOdometer) {
+                    e.preventDefault();
+                    toastr.error("Next oil change odometer must be greater than current odometer");
+                    return false;
+                }
+
+                // Show loading overlay
+                $('body').append('<div class="overlay"><div class="spinner"></div><div class="text-white mt-3">Saving oil information, please wait...</div></div>');
+            });
+
+            // Set Qatar timezone for date input
+            if ($("#OilChangeDate").val()) {
+                const date = moment($("#OilChangeDate").val()).tz('Asia/Qatar');
+                $("#OilChangeDate").val(date.format('YYYY-MM-DDTHH:mm'));
+            }
+
+            // Disable license plate field if editing existing record
+            if ($("#Id").val()) {
+                $("#LicensePlate").prop('disabled', true);
+            }
+        });
+    </script>
+}

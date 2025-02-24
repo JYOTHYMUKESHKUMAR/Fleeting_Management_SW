@@ -6,9 +6,13 @@
 
   <ItemGroup>
     <Compile Remove="Views\Customer\**" />
+    <Compile Remove="Views\NewFolder\**" />
     <Content Remove="Views\Customer\**" />
+    <Content Remove="Views\NewFolder\**" />
     <EmbeddedResource Remove="Views\Customer\**" />
+    <EmbeddedResource Remove="Views\NewFolder\**" />
     <None Remove="Views\Customer\**" />
+    <None Remove="Views\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,7 +74,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\" />
-    <Folder Include="Views\NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>

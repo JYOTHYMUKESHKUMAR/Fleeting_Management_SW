@@ -1,0 +1,109 @@
+/* site.css or custom.css */
+/* Common styles for all data tables */
+.dataTables_wrapper table.dataTable,
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    /* Common header styles for all tables */
+    .dataTables_wrapper table.dataTable thead th,
+    .table thead th {
+        background-color: #003366 !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 15px;
+        border: none;
+        font-size: 12px; /* Reduced size */
+        letter-spacing: 0.5px;
+        text-align: center; /* Centered text */
+    }
+
+    /* Common striped rows for all tables */
+    .dataTables_wrapper table.dataTable tbody tr:nth-of-type(odd),
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 51, 102, 0.05);
+    }
+
+    .dataTables_wrapper table.dataTable tbody tr:nth-of-type(even),
+    .table-striped tbody tr:nth-of-type(even) {
+        background-color: #ffffff;
+    }
+
+    /* Common cell styles for all tables */
+    .dataTables_wrapper table.dataTable td,
+    .table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        border-top: 1px solid #e9ecef;
+    }
+
+    /* Common hover effect for all tables */
+    .dataTables_wrapper table.dataTable tbody tr:hover,
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 51, 102, 0.075) !important;
+        transition: background-color 0.3s ease;
+    }
+
+/* Common header styles for all pages */
+.report-header {
+    background-color: #003366;
+    padding: 15px; /* Reduced padding */
+    text-align: center;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.report-title {
+    color: #ffffff;
+    font-size: 24px; /* Reduced size */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+/* Common card styles */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border: none;
+    margin-bottom: 30px;
+}
+
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(0, 51, 102, 0.125);
+    padding: 20px;
+}
+
+/* Common DataTables styling */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+    color: #003366;
+    margin: 15px 0;
+}
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 4px !important;
+        border: 1px solid #003366 !important;
+        background: transparent !important;
+        color: #003366 !important;
+    }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #003366 !important;
+            color: #ffffff !important;
+            border: 1px solid #003366 !important;
+        }

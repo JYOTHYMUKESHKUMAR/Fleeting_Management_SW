@@ -1,28 +1,11 @@
 ﻿@model IEnumerable<DotNetCoreMVCApp.Models.Repository.Vehicle>
 
-@{
-    ViewData["Title"] = "Manage Vehicles";
-}
+
 
 <link href="~/datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
 
 <style>
-    .report-header {
-        background-color: lightsteelblue;
-        padding: 15px;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .report-title {
-        color: #ff6600;
-        font-size: 24px;
-        font-weight: bold;
-    }
-
-    #vehicleTable th {
-        background-color: lightsteelblue;
-    }
+   
 
     .alert-success-green {
         color: #ffffff;
@@ -108,7 +91,7 @@
                                     <th>Type</th>
                                     <th>Brand</th>
                                     <th>Model</th>
-                                    <th>Year</th>
+                                   
                                     <th>Tank Cap. (L)</th>
                                     <th>Fuel Limit (L)</th>
                                     <th>Reg. Expiry</th>
@@ -128,7 +111,7 @@
                                         <td>@vehicle.VehicleType</td>
                                         <td>@vehicle.VehicleBrand</td>
                                         <td>@vehicle.VehicleModel</td>
-                                        <td>@vehicle.Year</td>
+                                        
                                         <td>@vehicle.FuelTankCapacity.ToString("F2")</td>
                                         <td>@vehicle.FuelLimit.ToString("F2")</td>
                                         <td>

@@ -19,6 +19,8 @@ namespace DotNetCoreMVCApp.Models
         public DbSet<FuelReportEntity> FuelReportEntitySet { get; set; }
         //public DbSet<ConsumptionReportEntity> ConsumptionReportEntitySet { get; set; }
         public DbSet<ConsumptionDetails> ConsumptionDetails { get; set; }
+        public DbSet<TireInformation> TireInformationSet { get; set; }
+        public DbSet<OilInformation> OilInformationSet { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

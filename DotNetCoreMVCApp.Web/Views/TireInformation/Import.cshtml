@@ -1,7 +1,4 @@
-﻿@{
-    ViewData["Title"] = "Import Vehicles";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿
 
 <link href="~/css/forms.css" rel="stylesheet" />
 
@@ -54,17 +51,17 @@
         }
     }
 
-    .import-instructions {
+    .import-guidelines {
         background-color: #e8f4ff;
         border-left: 4px solid var(--navy-primary);
         padding: 1rem;
     }
 
-        .import-instructions ol {
+        .import-guidelines ul {
             padding-left: 1.5rem;
         }
 
-        .import-instructions li {
+        .import-guidelines li {
             margin-bottom: 0.5rem;
         }
 
@@ -100,13 +97,6 @@
         margin-top: 1rem;
         font-weight: bold;
     }
-
-    .requirements-list {
-        background-color: #fff4e5;
-        border-left: 4px solid #ff9800;
-        padding: 1rem;
-        margin-top: 1rem;
-    }
 </style>
 
 <!-- Container-fluid with padding -->
@@ -114,71 +104,73 @@
     <!-- Page Title -->
     <div class="row mb-3">
         <div class="col-12 text-center">
-            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Import Vehicles</h1>
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Import Tire Information</h1>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="row">
-        <div class="col-lg-7 col-md-12 mb-4">
-            <div class="card shadow-sm h-100">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
                 <div class="card-header bg-navy text-white">
-                    <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Import Instructions</h3>
+                    <h3 class="mb-0"><i class="fas fa-file-import me-2"></i>Upload Tire Data</h3>
                 </div>
                 <div class="card-body bg-light">
-                    <div class="import-instructions">
-                        <ol>
-                            <li>Download the sample template using the button below.</li>
-                            <li>Fill in your vehicle data following the template format.</li>
-                            <li>Save the file as CSV format.</li>
-                            <li>Upload the completed file using the form to the right.</li>
-                            <li>Click 'Import' to process your vehicle data.</li>
-                        </ol>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <a asp-action="DownloadTemplate" class="btn btn-success">
+                                <i class="fas fa-download me-1"></i> Download Import Template
+                            </a>
+                            <span class="ms-2 text-muted">Download a template file with the correct format for importing tire data</span>
+                        </div>
                     </div>
 
-                    <div class="requirements-list mt-4">
-                        <h5 class="text-navy mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Important Requirements</h5>
-                        <ul>
-                            <li><strong>Vehicle ID:</strong> Must be unique for each vehicle</li>
-                            <li><strong>License Plate:</strong> Must be unique</li>
-                            <li>
-                                <strong>Vehicle Type:</strong> Must be one of: <br />
-                                <span class="text-muted">@string.Join(", ", DotNetCoreMVCApp.Models.Repository.VehicleTypeHelper.GetAllTypes())</span>
-                            </li>
-                            <li><strong>Date Format:</strong> MM/dd/yyyy for registration and insurance dates</li>
-                            <li><strong>Number Format:</strong> Use decimal point (.) not comma for numeric values</li>
-                        </ul>
-                    </div>
-
-                    <div class="mt-4 text-center">
-                        <a asp-action="DownloadTemplate" class="btn btn-info">
-                            <i class="fas fa-download me-1"></i> Download Sample Template
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-5 col-md-12">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-navy text-white">
-                    <h3 class="mb-0"><i class="fas fa-file-import me-2"></i>Upload File</h3>
-                </div>
-                <div class="card-body bg-light">
-                    <form asp-action="Import" enctype="multipart/form-data" method="post" id="importForm">
+                    <form asp-action="Import" method="post" enctype="multipart/form-data" id="importForm">
                         @Html.AntiForgeryToken()
 
-                        <div class="file-upload-container mb-4" id="drop-area">
-                            <div class="upload-icon">
-                                <i class="fas fa-file-csv"></i>
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="file-upload-container" id="drop-area">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-file-csv"></i>
+                                    </div>
+                                    <h5 class="text-navy">Drag & Drop CSV File Here</h5>
+                                    <p>- or -</p>
+                                    <label for="file" class="btn btn-navy upload-button">
+                                        <i class="fas fa-folder-open me-1"></i> Browse Files
+                                    </label>
+                                    <input type="file" name="file" id="file" accept=".csv" required />
+                                    <div class="selected-file mt-3" id="file-name"></div>
+                                </div>
                             </div>
-                            <h5 class="text-navy">Drag & Drop CSV File Here</h5>
-                            <p>- or -</p>
-                            <label for="file" class="btn btn-navy upload-button">
-                                <i class="fas fa-folder-open me-1"></i> Browse Files
-                            </label>
-                            <input type="file" id="file" name="file" accept=".csv" required />
-                            <div class="selected-file mt-3" id="file-name"></div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="import-guidelines">
+                                    <h5 class="text-navy mb-3"><i class="fas fa-info-circle me-2"></i>Import Guidelines</h5>
+                                    <ul>
+                                        <li><strong>File Format:</strong> File must be in CSV format</li>
+                                        <li><strong>Required Fields:</strong> Serial Number, Size, Brand, Price, Supplier, Vehicle Information, Installation Date, Installation Odometer</li>
+                                        <li><strong>Date Format:</strong> MM/dd/yyyy HH:mm</li>
+                                        <li><strong>Number Format:</strong> Numbers should use decimal point (.) not comma</li>
+                                        <li><strong>Boolean Fields:</strong> For Is Deactivated, use 'true' or 'false'</li>
+                                        <li><strong>Currency:</strong> All monetary values should be in QAR</li>
+                                        <li><strong>Optional Fields:</strong> Removal Date and Removal Odometer</li>
+                                        <li>
+                                            <strong>Field Lengths:</strong>
+                                            <ul>
+                                                <li>Serial Number: max 50 characters</li>
+                                                <li>Size: max 50 characters</li>
+                                                <li>Brand: max 50 characters</li>
+                                                <li>Supplier: max 100 characters</li>
+                                                <li>Vehicle Information: max 100 characters</li>
+                                                <li>Notes: max 500 characters</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Action Buttons -->
@@ -187,7 +179,7 @@
                                 <i class="fas fa-arrow-left me-1"></i>Back
                             </a>
                             <button type="submit" class="btn btn-navy" id="importButton" disabled>
-                                <i class="fas fa-upload me-1"></i>Import
+                                <i class="fas fa-upload me-1"></i>Import Data
                             </button>
                         </div>
                     </form>
@@ -198,17 +190,8 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Configure toastr
-            toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "3000"
-            };
-
             // File input change handler
             $("#file").change(function () {
                 const file = this.files[0];
@@ -218,6 +201,7 @@
                     return;
                 }
 
+                const fileType = file.type || 'application/octet-stream';
                 const fileSize = (file.size / 1024 / 1024).toFixed(2); // in MB
 
                 // Check file type
@@ -229,7 +213,7 @@
                     return;
                 }
 
-                // Check file size (max 10MB)
+                // Check file size (e.g., max 10MB)
                 if (fileSize > 10) {
                     toastr.error('File size exceeds 10MB. Please select a smaller file.');
                     this.value = '';
@@ -297,22 +281,26 @@
             }
 
             // Form submission
-            $("#importForm").on("submit", function (e) {
+            $("#importForm").on("submit", function () {
                 if (!$("#file").val()) {
                     toastr.error('Please select a file to import.');
-                    e.preventDefault();
                     return false;
                 }
 
                 // Show loading overlay
-                $('body').append('<div class="overlay"><div class="spinner"></div><div class="text-white mt-3">Importing vehicle data, please wait...</div></div>');
+                $('body').append('<div class="overlay"><div class="spinner"></div><div class="text-white mt-3">Importing tire data, please wait...</div></div>');
 
-                // Disable submit button to prevent double submission
-                $("#importButton").prop('disabled', true);
-
-                // Allow form submission
+                // Return true to allow form submission
                 return true;
             });
+
+            // Configure toastr
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            };
         });
     </script>
 }

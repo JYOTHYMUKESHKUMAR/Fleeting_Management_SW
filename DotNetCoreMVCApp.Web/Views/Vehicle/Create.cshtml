@@ -1,202 +1,388 @@
 ﻿@model DotNetCoreMVCApp.Models.Repository.Vehicle
-@{
-    ViewData["Title"] = "Create Vehicle";
-}
+
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+<link href="~/css/forms.css" rel="stylesheet" />
 
 <style>
-    .button-container {
-        position: relative;
-        padding-top: 20px;
+    .select2-container {
+        width: 100% !important;
     }
 
-    .btn-top-right {
-        position: absolute;
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+        box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    }
+
+    .validation-summary-errors {
+        color: #dc3545;
+        padding: 10px;
+        margin-bottom: 1rem;
+        border: 1px solid #dc3545;
+        border-radius: 4px;
+        background-color: #f8d7da;
+    }
+
+    .field-validation-error {
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+
+    .input-validation-error {
+        border-color: #dc3545;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--single {
+        border: 1px solid #ced4da !important;
+        height: calc(2.25rem + 2px) !important;
+    }
+
+    .select2-container--bootstrap4.select2-container--focus .select2-selection--single {
+        border-color: var(--navy-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 51, 102, 0.25) !important;
+    }
+
+    /* For validation states */
+    .input-validation-error + .select2-container--bootstrap4 .select2-selection--single {
+        border-color: #dc3545 !important;
+    }
+
+    /* Loading overlay */
+    .overlay {
+        position: fixed;
         top: 0;
-        right: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--navy-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 </style>
 
-<div class="button-container">
-    <a asp-action="Index" class="btn btn-secondary btn-top-right">Back to List</a>
-</div>
-
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Create Vehicle</h1>
-            </div>
+<!-- Container-fluid with padding -->
+<div class="container-fluid py-4">
+    <!-- Page Title -->
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Create Vehicle</h1>
         </div>
     </div>
-</section>
 
-<section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card card-secondary">
-                    <div class="card-header">
-                        <h3 class="card-title">Enter Vehicle Details</h3>
+    <!-- Main Content -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-navy text-white">
+            <h3 class="mb-0"><i class="fas fa-car me-2"></i>Enter Vehicle Information</h3>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var modelState in ViewData.ModelState.Values)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+
+        <div class="card-body bg-light">
+            <form asp-action="Create" method="post" id="createVehicleForm">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <!-- Vehicle Information -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Vehicle Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="VehicleId" class="form-label text-navy fw-bold">Vehicle ID <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-id-card"></i></span>
+                                        <input asp-for="VehicleId" class="form-control border-navy" required
+                                               data-val="true"
+                                               data-val-required="Vehicle ID is required" />
+                                    </div>
+                                    <span asp-validation-for="VehicleId" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="LicensePlate" class="form-label text-navy fw-bold">License Plate <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-car"></i></span>
+                                        <input asp-for="LicensePlate" class="form-control border-navy" required
+                                               data-val="true"
+                                               data-val-required="License Plate is required" />
+                                    </div>
+                                    <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="WoqodLicensePlate" class="form-label text-navy fw-bold">Woqod License Plate <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-gas-pump"></i></span>
+                                        <input asp-for="WoqodLicensePlate" class="form-control border-navy" required
+                                               data-val="true"
+                                               data-val-required="Woqod License Plate is required" />
+                                    </div>
+                                    <span asp-validation-for="WoqodLicensePlate" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="GPSCode" class="form-label text-navy fw-bold">GPS Code <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-map-marker-alt"></i></span>
+                                        <input asp-for="GPSCode" class="form-control border-navy" required
+                                               data-val="true"
+                                               data-val-required="GPS Code is required" />
+                                    </div>
+                                    <span asp-validation-for="GPSCode" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="VehicleType" class="form-label text-navy fw-bold">Vehicle Type <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-truck"></i></span>
+                                        <select asp-for="VehicleType" class="form-select border-navy" required
+                                                asp-items="@(new SelectList(DotNetCoreMVCApp.Models.Repository.VehicleTypeHelper.GetAllTypes()))"
+                                                data-val="true"
+                                                data-val-required="Vehicle Type is required">
+                                            <option value="">-- Select Vehicle Type --</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="VehicleType" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="VehicleBrand" class="form-label text-navy fw-bold">Vehicle Brand <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-tag"></i></span>
+                                        <input asp-for="VehicleBrand" class="form-control border-navy" required
+                                               data-val="true"
+                                               data-val-required="Vehicle Brand is required" />
+                                    </div>
+                                    <span asp-validation-for="VehicleBrand" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="VehicleModel" class="form-label text-navy fw-bold">Vehicle Model <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-car-side"></i></span>
+                                        <input asp-for="VehicleModel" class="form-control border-navy" required
+                                               data-val="true"
+                                               data-val-required="Vehicle Model is required" />
+                                    </div>
+                                    <span asp-validation-for="VehicleModel" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Year" class="form-label text-navy fw-bold">Year <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-calendar-alt"></i></span>
+                                        <input asp-for="Year" class="form-control border-navy" required type="number" min="1900" max="@DateTime.Now.Year"
+                                               data-val="true"
+                                               data-val-required="Year is required"
+                                               data-val-range="Year must be between 1900 and current year"
+                                               data-val-range-min="1900"
+                                               data-val-range-max="@DateTime.Now.Year" />
+                                    </div>
+                                    <span asp-validation-for="Year" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    @if (!ViewData.ModelState.IsValid)
-                    {
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach (var modelState in ViewData.ModelState.Values)
-                                {
-                                    foreach (var error in modelState.Errors)
-                                    {
-                                        <li>@error.ErrorMessage</li>
-                                    }
-                                }
-                            </ul>
+                    <!-- Fuel & Documentation Information -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Fuel & Documentation</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="FuelTankCapacity" class="form-label text-navy fw-bold">Fuel Tank Capacity (L) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-gas-pump"></i></span>
+                                        <input asp-for="FuelTankCapacity" class="form-control border-navy" required type="number" step="0.01" min="0" max="2000"
+                                               data-val="true"
+                                               data-val-required="Fuel Tank Capacity is required"
+                                               data-val-range="Fuel Tank Capacity must be between 0 and 2000 liters"
+                                               data-val-range-min="0"
+                                               data-val-range-max="2000" />
+                                    </div>
+                                    <span asp-validation-for="FuelTankCapacity" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="FuelLimit" class="form-label text-navy fw-bold">Fuel Limit (L) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-tachometer-alt"></i></span>
+                                        <input asp-for="FuelLimit" class="form-control border-navy" required type="number" step="0.01" min="0" max="2000"
+                                               data-val="true"
+                                               data-val-required="Fuel Limit is required"
+                                               data-val-range="Fuel Limit must be between 0 and 2000 liters"
+                                               data-val-range-min="0"
+                                               data-val-range-max="2000" />
+                                    </div>
+                                    <span asp-validation-for="FuelLimit" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="RegistrationExpiryDate" class="form-label text-navy fw-bold">Registration Expiry Date <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-calendar"></i></span>
+                                        <input asp-for="RegistrationExpiryDate" class="form-control border-navy" required type="date"
+                                               data-val="true"
+                                               data-val-required="Registration Expiry Date is required" />
+                                    </div>
+                                    <span asp-validation-for="RegistrationExpiryDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="InsurancePolicyNo" class="form-label text-navy fw-bold">Insurance Policy No <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-file-contract"></i></span>
+                                        <input asp-for="InsurancePolicyNo" class="form-control border-navy" required
+                                               data-val="true"
+                                               data-val-required="Insurance Policy Number is required"
+                                               maxlength="50" />
+                                    </div>
+                                    <span asp-validation-for="InsurancePolicyNo" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="InsurancePolicyExpiry" class="form-label text-navy fw-bold">Insurance Policy Expiry <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-shield-alt"></i></span>
+                                        <input asp-for="InsurancePolicyExpiry" class="form-control border-navy" required type="date"
+                                               data-val="true"
+                                               data-val-required="Insurance Policy Expiry Date is required" />
+                                    </div>
+                                    <span asp-validation-for="InsurancePolicyExpiry" class="text-danger"></span>
+                                </div>
+                            </div>
                         </div>
-                    }
+                    </div>
 
-                    <form asp-action="Create" method="post" id="createVehicleForm">
-                        @Html.AntiForgeryToken()
-                        <div class="card-body">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                            <div class="form-group">
-                                <label asp-for="VehicleId" class="control-label">Vehicle ID *</label>
-                                <input asp-for="VehicleId" class="form-control" required
-                                       data-val="true"
-                                       data-val-required="Vehicle ID is required" />
-                                <span asp-validation-for="VehicleId" class="text-danger"></span>
+                    <!-- Action Buttons -->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <p><small class="text-muted">* Required fields</small></p>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </a>
+                                    <button type="submit" class="btn btn-navy">
+                                        <i class="fas fa-save me-1"></i>Create
+                                    </button>
+                                </div>
                             </div>
-
-                            <div class="form-group">
-                                <label asp-for="LicensePlate" class="control-label">License Plate *</label>
-                                <input asp-for="LicensePlate" class="form-control" required
-                                       data-val="true"
-                                       data-val-required="License Plate is required" />
-                                <span asp-validation-for="LicensePlate" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="WoqodLicensePlate" class="control-label">Woqod License Plate *</label>
-                                <input asp-for="WoqodLicensePlate" class="form-control" required
-                                       data-val="true"
-                                       data-val-required="Woqod License Plate is required" />
-                                <span asp-validation-for="WoqodLicensePlate" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="GPSCode" class="control-label">GPS Code *</label>
-                                <input asp-for="GPSCode" class="form-control" required
-                                       data-val="true"
-                                       data-val-required="GPS Code is required" />
-                                <span asp-validation-for="GPSCode" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="VehicleType" class="control-label">Vehicle Type *</label>
-                                <select asp-for="VehicleType" class="form-control" required
-                                        asp-items="@(new SelectList(DotNetCoreMVCApp.Models.Repository.VehicleTypeHelper.GetAllTypes()))"
-                                        data-val="true"
-                                        data-val-required="Vehicle Type is required">
-                                    <option value="">-- Select Vehicle Type --</option>
-                                </select>
-                                <span asp-validation-for="VehicleType" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="VehicleBrand" class="control-label">Vehicle Brand *</label>
-                                <input asp-for="VehicleBrand" class="form-control" required
-                                       data-val="true"
-                                       data-val-required="Vehicle Brand is required" />
-                                <span asp-validation-for="VehicleBrand" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="VehicleModel" class="control-label">Vehicle Model *</label>
-                                <input asp-for="VehicleModel" class="form-control" required
-                                       data-val="true"
-                                       data-val-required="Vehicle Model is required" />
-                                <span asp-validation-for="VehicleModel" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="Year" class="control-label">Year *</label>
-                                <input asp-for="Year" class="form-control" required type="number" min="1900" max="@DateTime.Now.Year"
-                                       data-val="true"
-                                       data-val-required="Year is required"
-                                       data-val-range="Year must be between 1900 and current year"
-                                       data-val-range-min="1900"
-                                       data-val-range-max="@DateTime.Now.Year" />
-                                <span asp-validation-for="Year" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="FuelTankCapacity" class="control-label">Fuel Tank Capacity (L) *</label>
-                                <input asp-for="FuelTankCapacity" class="form-control" required type="number" step="0.01" min="0" max="2000"
-                                       data-val="true"
-                                       data-val-required="Fuel Tank Capacity is required"
-                                       data-val-range="Fuel Tank Capacity must be between 0 and 2000 liters"
-                                       data-val-range-min="0"
-                                       data-val-range-max="2000" />
-                                <span asp-validation-for="FuelTankCapacity" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="FuelLimit" class="control-label">Fuel Limit (L) *</label>
-                                <input asp-for="FuelLimit" class="form-control" required type="number" step="0.01" min="0" max="2000"
-                                       data-val="true"
-                                       data-val-required="Fuel Limit is required"
-                                       data-val-range="Fuel Limit must be between 0 and 2000 liters"
-                                       data-val-range-min="0"
-                                       data-val-range-max="2000" />
-                                <span asp-validation-for="FuelLimit" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="RegistrationExpiryDate" class="control-label">Registration Expiry Date *</label>
-                                <input asp-for="RegistrationExpiryDate" class="form-control" required type="date"
-                                       data-val="true"
-                                       data-val-required="Registration Expiry Date is required" />
-                                <span asp-validation-for="RegistrationExpiryDate" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="InsurancePolicyNo" class="control-label">Insurance Policy No *</label>
-                                <input asp-for="InsurancePolicyNo" class="form-control" required
-                                       data-val="true"
-                                       data-val-required="Insurance Policy Number is required"
-                                       maxlength="50" />
-                                <span asp-validation-for="InsurancePolicyNo" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="InsurancePolicyExpiry" class="control-label">Insurance Policy Expiry *</label>
-                                <input asp-for="InsurancePolicyExpiry" class="form-control" required type="date"
-                                       data-val="true"
-                                       data-val-required="Insurance Policy Expiry Date is required" />
-                                <span asp-validation-for="InsurancePolicyExpiry" class="text-danger"></span>
-                            </div>
-
-                            <p><small class="text-muted">* Required fields</small></p>
                         </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Create</button>
-                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-                        </div>
-                    </form>
+                    </div>
                 </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="saveConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="saveConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-navy text-white">
+                <h5 class="modal-title" id="saveConfirmationModalLabel">Confirm Vehicle Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-details">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong class="text-navy">Vehicle ID:</strong><br /> <span id="confirm-id"></span></p>
+                            <p><strong class="text-navy">License Plate:</strong><br /> <span id="confirm-license"></span></p>
+                            <p><strong class="text-navy">Vehicle:</strong><br /> <span id="confirm-vehicle"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong class="text-navy">Fuel Tank:</strong><br /> <span id="confirm-tank"></span> L</p>
+                            <p><strong class="text-navy">Fuel Limit:</strong><br /> <span id="confirm-limit"></span> L</p>
+                            <p><strong class="text-navy">Year:</strong><br /> <span id="confirm-year"></span></p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center mt-3">Are you sure you want to save this vehicle information?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-navy" id="confirmSave">Confirm & Save</button>
             </div>
         </div>
     </div>
-</section>
+</div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
     <script>
         $(document).ready(function () {
+            // Initialize Select2 for dropdowns
+            $('.select2bs4').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Select an option'
+            });
+
             // Enable client-side validation
             $.validator.unobtrusive.parse("#createVehicleForm");
+
+            // Configure toastr
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            };
 
             // Add custom validation for Vehicle ID, License Plates and GPS Code
             $.validator.addMethod("alphanumeric", function (value, element) {
@@ -247,14 +433,34 @@
                 }
             });
 
-            // Validate FuelLimit against FuelTankCapacity
-            $("#createVehicleForm").on("submit", function (e) {
+            // Format numeric fields to 2 decimal places on blur
+            $("#FuelTankCapacity, #FuelLimit").on("blur", function () {
+                const value = $(this).val();
+                if (value) {
+                    $(this).val(parseFloat(value).toFixed(2));
+                }
+            });
+
+            // Auto-format inputs to uppercase
+            $("#VehicleId, #LicensePlate, #WoqodLicensePlate").on("input", function () {
+                $(this).val($(this).val().toUpperCase());
+            });
+
+            // Handle form submission and show confirmation modal
+            $("#createVehicleForm").submit(function (e) {
+                e.preventDefault();
+
+                // Run form validations
+                if (!$(this).valid()) {
+                    return false;
+                }
+
+                // Validate FuelLimit against FuelTankCapacity
                 const tankCapacity = parseFloat($("#FuelTankCapacity").val());
                 const fuelLimit = parseFloat($("#FuelLimit").val());
 
                 if (fuelLimit > tankCapacity) {
-                    e.preventDefault();
-                    alert("Fuel limit cannot exceed fuel tank capacity");
+                    toastr.error("Fuel limit cannot exceed fuel tank capacity");
                     return false;
                 }
 
@@ -266,19 +472,31 @@
                 $("#VehicleBrand").val($("#VehicleBrand").val().trim());
                 $("#VehicleModel").val($("#VehicleModel").val().trim());
                 $("#InsurancePolicyNo").val($("#InsurancePolicyNo").val().trim());
+
+                // Update confirmation modal with current values
+                updateConfirmationModal();
+                $("#saveConfirmationModal").modal('show');
             });
 
-            // Auto-format inputs to uppercase
-            $("#VehicleId, #LicensePlate, #WoqodLicensePlate").on("input", function () {
-                $(this).val($(this).val().toUpperCase());
-            });
+            // Function to update the confirmation modal with current values
+            function updateConfirmationModal() {
+                $("#confirm-id").text($("#VehicleId").val());
+                $("#confirm-license").text($("#LicensePlate").val());
+                $("#confirm-vehicle").text($("#VehicleBrand").val() + ' ' + $("#VehicleModel").val());
+                $("#confirm-tank").text($("#FuelTankCapacity").val());
+                $("#confirm-limit").text($("#FuelLimit").val());
+                $("#confirm-year").text($("#Year").val());
+            }
 
-            // Format numeric fields to 2 decimal places on blur
-            $("#FuelTankCapacity, #FuelLimit").on("blur", function () {
-                const value = $(this).val();
-                if (value) {
-                    $(this).val(parseFloat(value).toFixed(2));
-                }
+            // Handle confirmation modal save button
+            $("#confirmSave").click(function () {
+                $("#saveConfirmationModal").modal('hide');
+
+                // Show loading overlay
+                $('body').append('<div class="overlay"><div class="spinner"></div><div class="text-white mt-3">Saving vehicle information, please wait...</div></div>');
+
+                const form = $("#createVehicleForm")[0];
+                form.submit();
             });
         });
     </script>

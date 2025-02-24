@@ -57,7 +57,7 @@
     <!-- Page Title -->
     <div class="row mb-3">
         <div class="col-12 text-center">
-            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Export Vehicle Data</h1>
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Export Oil Data</h1>
         </div>
     </div>
 
@@ -73,21 +73,21 @@
                         @Html.AntiForgeryToken()
 
                         <div class="mb-4">
-                            <label for="format" class="form-label text-navy fw-bold">Select Export Format:</label>
+                            <label class="form-label text-navy fw-bold">Select Export Format:</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-navy text-white"><i class="fas fa-file-alt"></i></span>
-                                <select id="format" name="format" class="form-select border-navy">
+                                <select name="format" class="form-select border-navy">
                                     <option value="excel">Excel (.xlsx)</option>
-                                    <option value="csv">CSV (.csv)</option>
                                     <option value="pdf">PDF (.pdf)</option>
+                                    <option value="csv">CSV (.csv)</option>
                                 </select>
                             </div>
-                            <small class="text-muted mt-2">Choose the file format for your exported vehicle data.</small>
+                            <small class="text-muted mt-2">Choose the file format for your exported data.</small>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-4">
-                            <a asp-action="Index" class="btn btn-secondary">
+                            <a href="javascript:history.back()" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left me-1"></i>Back
                             </a>
                             <button type="submit" class="btn btn-navy">

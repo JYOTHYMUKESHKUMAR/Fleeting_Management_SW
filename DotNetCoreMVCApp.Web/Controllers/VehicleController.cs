@@ -542,6 +542,9 @@ namespace DotNetCoreMVCApp.Web.Controllers
                     records = csv.GetRecords<Vehicle>().ToList();
                 }
 
+                int importedCount = 0;
+                int failedCount = 0;
+
                 foreach (var record in records)
                 {
                     try
@@ -551,7 +554,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                         // Basic data cleanup
                         record.VehicleId = record.VehicleId?.Replace(" ", "-").Trim();
                         record.IsDeleted = false;
-                        record.CreatedBy = "System";
+                        record.CreatedBy = User.Identity?.Name ?? "System";
                         record.CreatedOn = DateTime.UtcNow;
 
                         // Check if record exists
@@ -563,13 +566,35 @@ namespace DotNetCoreMVCApp.Web.Controllers
                             _dbContext.VehicleSet.Add(record);
                             await _dbContext.SaveChangesAsync();
                             await transaction.CommitAsync();
+                            importedCount++;
+                        }
+                        else
+                        {
+                            failedCount++;
+                            _logger.LogWarning($"Vehicle with ID {record.VehicleId} already exists and was skipped.");
                         }
                     }
                     catch (Exception ex)
                     {
+                        failedCount++;
                         _logger.LogError(ex, $"Failed to import vehicle {record.VehicleId}. Error: {ex.Message}");
                         continue;
                     }
+                }
+
+                // Set success message with import results
+                if (importedCount > 0)
+                {
+                    TempData["SuccessMessage"] = $"Successfully imported {importedCount} vehicles." +
+                        (failedCount > 0 ? $" {failedCount} records failed to import." : "");
+                }
+                else if (failedCount > 0)
+                {
+                    TempData["ErrorMessage"] = $"Import failed. All {failedCount} records could not be imported.";
+                }
+                else
+                {
+                    TempData["WarningMessage"] = "No records were found to import.";
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -581,7 +606,6 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 return View();
             }
         }
-
         private bool VehicleExists(string id)
         {
             return _dbContext.VehicleSet.Any(v => v.VehicleId == id && !v.IsDeleted);

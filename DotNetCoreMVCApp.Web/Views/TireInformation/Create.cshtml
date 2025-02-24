@@ -1,0 +1,478 @@
+﻿@model DotNetCoreMVCApp.Models.Web.TireInformationViewModel
+
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+<link href="~/css/forms.css" rel="stylesheet" />
+
+<style>
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+        box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    }
+
+    .validation-summary-errors {
+        color: #dc3545;
+        padding: 10px;
+        margin-bottom: 1rem;
+        border: 1px solid #dc3545;
+        border-radius: 4px;
+        background-color: #f8d7da;
+    }
+
+    .field-validation-error {
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+
+    .input-validation-error {
+        border-color: #dc3545;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--single {
+        border: 1px solid #ced4da !important;
+        height: calc(2.25rem + 2px) !important;
+    }
+
+    .select2-container--bootstrap4.select2-container--focus .select2-selection--single {
+        border-color: var(--navy-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 51, 102, 0.25) !important;
+    }
+
+    /* For validation states */
+    .input-validation-error + .select2-container--bootstrap4 .select2-selection--single {
+        border-color: #dc3545 !important;
+    }
+
+    /* Loading overlay */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--navy-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<!-- Container-fluid with padding -->
+<div class="container-fluid py-4">
+    <!-- Page Title -->
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Create Tire Information</h1>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-navy text-white">
+            <h3 class="mb-0"><i class="fas fa-truck-monster me-2"></i>Enter Tire Information</h3>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var modelState in ViewData.ModelState.Values)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+
+        <div class="card-body bg-light">
+            <form asp-action="Create" method="post" id="createTireForm">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <!-- Tire Information -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Tire Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="TireSerialNumber" class="form-label text-navy fw-bold">Serial Number <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-barcode"></i></span>
+                                        <input asp-for="TireSerialNumber" class="form-control border-navy" required maxlength="50" />
+                                    </div>
+                                    <span asp-validation-for="TireSerialNumber" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="TireSize" class="form-label text-navy fw-bold">Tire Size <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-ruler"></i></span>
+                                        <input asp-for="TireSize" class="form-control border-navy" required maxlength="50" />
+                                    </div>
+                                    <span asp-validation-for="TireSize" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="TireBrand" class="form-label text-navy fw-bold">Brand <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-tag"></i></span>
+                                        <input asp-for="TireBrand" class="form-control border-navy" required maxlength="50" />
+                                    </div>
+                                    <span asp-validation-for="TireBrand" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="TirePrice" class="form-label text-navy fw-bold">Price <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-dollar-sign"></i></span>
+                                        <input asp-for="TirePrice" class="form-control border-navy" required
+                                               type="number" step="0.01" min="0"
+                                               data-val="true"
+                                               data-val-required="Price is required" />
+                                    </div>
+                                    <span asp-validation-for="TirePrice" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Supplier" class="form-label text-navy fw-bold">Supplier <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-building"></i></span>
+                                        <input asp-for="Supplier" class="form-control border-navy" required maxlength="100" />
+                                    </div>
+                                    <span asp-validation-for="Supplier" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Information -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Installation Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="LicensePlate" class="form-label text-navy fw-bold">License Plate <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-car"></i></span>
+                                        <select asp-for="LicensePlate" class="form-select border-navy" required
+                                                asp-items="Model.LicensePlateList"
+                                                data-val="true"
+                                                data-val-required="License Plate is required">
+                                            <option value="">-- Select License Plate --</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="InstallationDate" class="form-label text-navy fw-bold">Installation Date <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-calendar"></i></span>
+                                        <input asp-for="InstallationDate" class="form-control border-navy" required type="datetime-local"
+                                               data-val="true"
+                                               data-val-required="Installation Date is required" />
+                                    </div>
+                                    <span asp-validation-for="InstallationDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="InstallationOdometer" class="form-label text-navy fw-bold">Installation Odometer <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-tachometer-alt"></i></span>
+                                        <input asp-for="InstallationOdometer" class="form-control border-navy" required
+                                               type="number" step="0.01" min="0"
+                                               data-val="true"
+                                               data-val-required="Installation Odometer is required" />
+                                    </div>
+                                    <span asp-validation-for="InstallationOdometer" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="RemovalDate" class="form-label text-navy fw-bold">Removal Date</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-calendar-times"></i></span>
+                                        <input asp-for="RemovalDate" class="form-control border-navy" type="datetime-local" />
+                                    </div>
+                                    <span asp-validation-for="RemovalDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="RemovalOdometer" class="form-label text-navy fw-bold">Removal Odometer</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-road"></i></span>
+                                        <input asp-for="RemovalOdometer" class="form-control border-navy"
+                                               type="number" step="0.01" min="0" />
+                                    </div>
+                                    <span asp-validation-for="RemovalOdometer" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information Section -->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Additional Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input asp-for="IsDeactivated" class="form-check-input" type="checkbox" />
+                                        <label asp-for="IsDeactivated" class="form-check-label text-navy fw-bold">Is Deactivated</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Notes" class="form-label text-navy fw-bold">Notes</label>
+                                    <textarea asp-for="Notes" class="form-control border-navy" maxlength="500" rows="3"></textarea>
+                                    <span asp-validation-for="Notes" class="text-danger"></span>
+                                </div>
+
+                                <p><small class="text-muted">* Required fields</small></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </a>
+                                    <button type="submit" class="btn btn-navy">
+                                        <i class="fas fa-save me-1"></i>Create
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="saveConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="saveConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-navy text-white">
+                <h5 class="modal-title" id="saveConfirmationModalLabel">Confirm Tire Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-details">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong class="text-navy">Serial Number:</strong><br /> <span id="confirm-serial"></span></p>
+                            <p><strong class="text-navy">Size:</strong><br /> <span id="confirm-size"></span></p>
+                            <p><strong class="text-navy">Brand:</strong><br /> <span id="confirm-brand"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong class="text-navy">Price:</strong><br /> QAR <span id="confirm-price"></span></p>
+                            <p><strong class="text-navy">Supplier:</strong><br /> <span id="confirm-supplier"></span></p>
+                            <p><strong class="text-navy">License Plate:</strong><br /> <span id="confirm-license"></span></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <p><strong class="text-navy">Installation Date:</strong><br /> <span id="confirm-install-date"></span></p>
+                            <p><strong class="text-navy">Installation Odometer:</strong><br /> <span id="confirm-install-odometer"></span></p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center mt-3">Are you sure you want to save this tire information?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-navy" id="confirmSave">Confirm & Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data.min.js"></script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Set timezone for the entire page
+        moment.tz.setDefault('Asia/Qatar');
+
+        $(document).ready(function () {
+            // Initialize Select2 for dropdowns
+            $('.select2bs4').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Select an option'
+            });
+
+            // Enable client-side validation
+            $.validator.unobtrusive.parse("#createTireForm");
+
+            // Configure toastr
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            };
+
+            // Format numeric fields to 2 decimal places on blur
+            $("#TirePrice, #InstallationOdometer, #RemovalOdometer").on("blur", function () {
+                const value = $(this).val();
+                if (value) {
+                    $(this).val(parseFloat(value).toFixed(2));
+                }
+            });
+
+            // Validate removal date is after installation date
+            function validateRemovalDate() {
+                const installDate = moment($("#InstallationDate").val());
+                const removalDate = moment($("#RemovalDate").val());
+
+                if (removalDate.isValid() && installDate.isValid() && removalDate.isBefore(installDate)) {
+                    toastr.error("Removal date cannot be before installation date");
+                    $("#RemovalDate").val('');
+                }
+            }
+
+            $("#RemovalDate").on("change", validateRemovalDate);
+            $("#InstallationDate").on("change", validateRemovalDate);
+
+            // Validate removal odometer is greater than installation odometer
+            function validateRemovalOdometer() {
+                const installOdo = parseFloat($("#InstallationOdometer").val()) || 0;
+                const removalOdo = parseFloat($("#RemovalOdometer").val()) || 0;
+
+                if (removalOdo > 0 && removalOdo < installOdo) {
+                    toastr.error("Removal odometer cannot be less than installation odometer");
+                    $("#RemovalOdometer").val('');
+                }
+            }
+
+            $("#RemovalOdometer").on("change", validateRemovalOdometer);
+            $("#InstallationOdometer").on("change", validateRemovalOdometer);
+
+            // Handle form submission and show confirmation modal
+            $("#createTireForm").submit(function (e) {
+                e.preventDefault();
+
+                // Run form validations
+                if (!$(this).valid()) {
+                    return false;
+                }
+
+                // Update confirmation modal with current values
+                updateConfirmationModal();
+                $("#saveConfirmationModal").modal('show');
+            });
+
+            // Function to update the confirmation modal with current values
+            function updateConfirmationModal() {
+                $("#confirm-serial").text($("#TireSerialNumber").val());
+                $("#confirm-size").text($("#TireSize").val());
+                $("#confirm-brand").text($("#TireBrand").val());
+                $("#confirm-price").text($("#TirePrice").val());
+                $("#confirm-supplier").text($("#Supplier").val());
+                $("#confirm-license").text($("#LicensePlate option:selected").text());
+                $("#confirm-install-date").text(moment($("#InstallationDate").val()).format('YYYY-MM-DD HH:mm'));
+                $("#confirm-install-odometer").text($("#InstallationOdometer").val());
+            }
+
+            // Handle confirmation modal save button
+            $("#confirmSave").click(function () {
+                $("#saveConfirmationModal").modal('hide');
+
+                // Show loading overlay
+                $('body').append('<div class="overlay"><div class="spinner"></div><div class="text-white mt-3">Saving tire information, please wait...</div></div>');
+
+                const form = $("#createTireForm")[0];
+                form.submit();
+            });
+
+            // Set default InstallationDate to current Qatar date and time if not set
+            if (!$("#InstallationDate").val()) {
+                const now = moment().tz('Asia/Qatar');
+                $("#InstallationDate").val(now.format('YYYY-MM-DDTHH:mm'));
+            }
+
+            // Add custom validation rules
+            $.validator.addMethod("futureDateValidation", function (value, element) {
+                const inputDate = moment(value);
+                const now = moment();
+                return !inputDate.isValid() || inputDate.isSameOrBefore(now);
+            }, "Date cannot be in the future");
+
+            // Apply custom validation rules
+            $("#InstallationDate, #RemovalDate").rules("add", {
+                futureDateValidation: true
+            });
+
+            // Handle deactivation checkbox
+            $("#IsDeactivated").change(function () {
+                if ($(this).is(":checked") && !$("#RemovalDate").val()) {
+                    const now = moment().tz('Asia/Qatar');
+                    $("#RemovalDate").val(now.format('YYYY-MM-DDTHH:mm'));
+                }
+            });
+
+            // Clear removal date when unchecking deactivation
+            $("#IsDeactivated").change(function () {
+                if (!$(this).is(":checked")) {
+                    $("#RemovalDate").val('');
+                    $("#RemovalOdometer").val('');
+                }
+            });
+        });
+    </script>
+}

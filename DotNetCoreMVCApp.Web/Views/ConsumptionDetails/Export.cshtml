@@ -1,22 +1,102 @@
-﻿@{
-    ViewData["Title"] = "Export Fuel Logs";
+﻿
+
+<link href="~/css/forms.css" rel="stylesheet" />
+
+<style>
+    /* Loading overlay */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--navy-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 }
+    
+    
+</style>
 
-<div class="container mt-4">
-    <h2>Export Fuel Logs</h2>
-
-    <form asp-action="ExportData" method="post">
-        @Html.AntiForgeryToken()
-
-        <div class="form-group">
-            <label>Select Export Format:</label>
-            <select name="format" class="form-control">
-                <option value="excel">Excel</option>
-                <option value="pdf">PDF</option>
-                <option value="csv">CSV</option>
-            </select>
+<!-- Container-fluid with padding -->
+<div class="container-fluid py-4">
+    <!-- Page Title -->
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Export Fuel Logs</h1>
         </div>
+    </div>
 
-        <button type="submit" class="btn btn-primary mt-3">Export</button>
-    </form>
+    <!-- Main Content -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-navy text-white">
+            <h3 class="mb-0"><i class="fas fa-file-export me-2"></i>Export Options</h3>
+        </div>
+        <div class="card-body bg-light">
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <form asp-action="ExportData" method="post" id="exportForm">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Select Export Format</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label text-navy fw-bold">File Format:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-file-alt"></i></span>
+                                        <select name="format" class="form-select border-navy">
+                                            <option value="excel">Excel</option>
+                                            <option value="pdf">PDF</option>
+                                            <option value="csv">CSV</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="javascript:history.back()" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </a>
+                                    <button type="submit" class="btn btn-navy">
+                                        <i class="fas fa-download me-1"></i>Export
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+

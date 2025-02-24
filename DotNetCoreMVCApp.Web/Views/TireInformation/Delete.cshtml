@@ -1,0 +1,72 @@
+﻿@model DotNetCoreMVCApp.Models.Entities.TireInformation
+@{
+    ViewData["Title"] = "Delete Tire Record";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h4>Delete Tire Record</h4>
+        </div>
+        <div class="card-body">
+            <h5 class="mb-4">Are you sure you want to delete this record?</h5>
+            <dl class="row">
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TireSerialNumber)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.TireSerialNumber)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TireSize)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.TireSize)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TireBrand)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.TireBrand)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TirePrice)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.TirePrice)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Supplier)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Supplier)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.LicensePlate)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.LicensePlate)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.InstallationDate)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.InstallationDate)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.InstallationOdometer)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.InstallationOdometer)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RemovalDate)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.RemovalDate)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RemovalOdometer)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.RemovalOdometer)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IsDeactivated)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.IsDeactivated)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Notes)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Notes)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedBy)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.CreatedBy)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedOn)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.CreatedOn)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdatedBy)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdatedBy)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdatedOn)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdatedOn)</dd>
+            </dl>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

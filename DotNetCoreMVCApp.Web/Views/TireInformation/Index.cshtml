@@ -1,33 +1,26 @@
-﻿@model IEnumerable<DotNetCoreMVCApp.Models.Web.ConsumptionDetailsViewModel>
+﻿@model IEnumerable<DotNetCoreMVCApp.Models.Web.TireInformationViewModel>
 
 @* @{
-    ViewData["Title"] = "Manage Consumption Details";
+    ViewData["Title"] = "Manage Tire Information";
 } *@
 
 <link href="~/datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
 
 <style>
     
-
     .total-row {
         font-weight: bold;
         background-color: #f8f9fa;
     }
 
-    @@keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
+    .deactivated {
+        background-color: #ffe6e6;
     }
 </style>
 
 <div class="container-fluid">
     <div class="card-header">
-        <a asp-action="Create" class="btn btn-primary">Add New Consumption</a>
+        <a asp-action="Create" class="btn btn-primary">Add New Tire</a>
         <a asp-action="Import" class="btn btn-primary">Import from file</a>
         <a asp-action="Export" class="btn btn-primary">Export</a>
     </div>
@@ -38,7 +31,7 @@
         <div class="row mb-2">
             <div class="col-sm-12">
                 <div class="report-header">
-                    <h1 class="report-title">Consumption Details Management</h1>
+                    <h1 class="report-title">Tire Information Management</h1>
                 </div>
             </div>
         </div>
@@ -63,60 +56,47 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <table id="consumptionTable" class="table table-bordered table-striped">
+                        <table id="tireTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    
-                                    <th>License Plate</th>
-                                    <th>Woqod License Plate</th>
-                                    <th>Driver</th>
-                                    <th>Product Name</th>
-                                    <th>Offline Limit</th>
-                                    <th>Fuel Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total Cost</th>
-                                    <th>Sale Time</th>
-                                    <th>Invoice Month</th>
-                                    <th>Station Name</th>
-                                    <th>Group Name</th>
-                                    <th>Fleet Name</th>
-                                    <th>Cost Center</th>
-                                    <th>Odometer</th>
-                                   
+                                    <th>Serial Number</th>
+                                    <th>Size</th>
+                                    <th>Brand</th>
+                                    <th>Price</th>
+                                    <th>Supplier</th>
+                                    <th>Vehicle</th>
+                                    <th>Installation Date</th>
+                                    <th>Installation Odometer</th>
+                                    <th>Removal Date</th>
+                                    <th>Removal Odometer</th>
+                                    <th>Status</th>
+                                    <th>Notes</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var item in Model)
                                 {
-                                    <tr>
-                                       
+                                    <tr class="@(item.IsDeactivated ? "deactivated" : "")">
+                                        <td>@item.TireSerialNumber</td>
+                                        <td>@item.TireSize</td>
+                                        <td>@item.TireBrand</td>
+                                        <td>@item.TirePrice.ToString("N2")</td>
+                                        <td>@item.Supplier</td>
                                         <td>@item.LicensePlate</td>
-                                        <td>@item.WoqodLicensePlate</td>
-                                        <td>@item.DriverName</td>
-                                        <td>@item.ProductName</td>
-                                        <td>@item.OfflineLimit.ToString("N2")</td>
-                                        <td>@item.FuelQuantity.ToString("N2")</td>
-                                        <td>@item.UnitPrice.ToString("N2")</td>
-                                        <td>@item.TotalCost.ToString("N2")</td>
-                                        <td>@item.SaleTime.ToString("MM/dd/yyyy HH:mm")</td>
-                                        <td>
-                                            @* In Index.cshtml where you display InvoiceMonth *@
-                                            @(string.IsNullOrEmpty(item.InvoiceMonth) ? "N/A" : item.InvoiceMonth)
-                                        </td>
-                                        <td>@(item.StationName ?? "N/A")</td>
-                                        <td>@(item.GroupName ?? "N/A")</td>
-                                        <td>@(item.FleetName ?? "N/A")</td>
-                                        <td>@(item.CostCenter ?? "N/A")</td>
-                                        <td>@(item.OdometerReading?.ToString("N2") ?? "N/A")</td>
-                                        
+                                        <td>@item.InstallationDate.ToString("MM/dd/yyyy HH:mm")</td>
+                                        <td>@item.InstallationOdometer.ToString("N2")</td>
+                                        <td>@(item.RemovalDate?.ToString("MM/dd/yyyy HH:mm") ?? "N/A")</td>
+                                        <td>@(item.RemovalOdometer?.ToString("N2") ?? "N/A")</td>
+                                        <td>@(item.IsDeactivated ? "Deactivated" : "Active")</td>
+                                        <td>@(item.Notes ?? "N/A")</td>
                                         <td>
                                             <div class="btn-group">
                                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </a>
                                                 <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger"
-                                                   onclick="return confirm('Are you sure you want to delete this consumption record?');">
+                                                   onclick="return confirm('Are you sure you want to delete this tire record?');">
                                                     <i class="fas fa-trash"></i> Delete
                                                 </a>
                                             </div>
@@ -126,10 +106,8 @@
                             </tbody>
                             <tfoot class="total-row">
                                 <tr>
-                                    <td colspan="6">Totals:</td>
-                                    <td>@Model.Sum(f => f.FuelQuantity).ToString("N2")</td>
-                                    <td></td>
-                                    <td>@Model.Sum(f => f.TotalCost).ToString("N2")</td>
+                                    <td colspan="3">Totals:</td>
+                                    <td>@Model.Sum(t => t.TirePrice).ToString("N2")</td>
                                     <td colspan="9"></td>
                                 </tr>
                             </tfoot>
@@ -147,7 +125,7 @@
     <script src="~/datatables/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            var table = $('#consumptionTable').DataTable({
+            var table = $('#tireTable').DataTable({
                 "paging": true,
                 "lengthChange": true,
                 "searching": true,
@@ -156,34 +134,18 @@
                 "autoWidth": false,
                 "responsive": true,
                 "language": {
-                    "emptyTable": "No consumption details available"
+                    "emptyTable": "No tire records available"
                 },
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 "pageLength": 25,
-                "order": [[9, "desc"]], // Sort by Sale Time descending
+                "order": [[6, "desc"]], // Sort by Installation Date descending
                 "columnDefs": [
                     {
-                        "targets": [0], // ID column
-                        "searchable": true,
-                        "sortable": true
-                    },
-                    {
-                        "targets": [9], // Sale Time column
+                        "targets": [6, 8], // Date columns
                         "type": "date"
                     },
                     {
-                        "targets": [10], // Invoice Month column
-                        "type": "date",
-                        "render": function (data, type, row) {
-                            if (type === 'sort') {
-                                // Return the original YYYYMMDD format for sorting
-                                return row[10];
-                            }
-                            return data; // Return the formatted MM/YYYY for display
-                        }
-                    },
-                    {
-                        "targets": [5, 6, 7, 8], // Numeric columns
+                        "targets": [3, 7, 9], // Numeric columns
                         "type": "num"
                     },
                     {
@@ -193,19 +155,13 @@
                 ],
                 "drawCallback": function (settings) {
                     var api = this.api();
-                    var totalQuantity = api.column(6, { page: 'current' })
-                        .data()
-                        .reduce(function (a, b) {
-                            return parseFloat(a) + parseFloat(b.replace(/[^\d.-]/g, ''));
-                        }, 0);
-                    var totalCost = api.column(8, { page: 'current' })
+                    var totalPrice = api.column(3, { page: 'current' })
                         .data()
                         .reduce(function (a, b) {
                             return parseFloat(a) + parseFloat(b.replace(/[^\d.-]/g, ''));
                         }, 0);
 
-                    $(api.table().footer()).find('td:eq(6)').text(totalQuantity.toFixed(2));
-                    $(api.table().footer()).find('td:eq(8)').text(totalCost.toLocaleString('en-US',
+                    $(api.table().footer()).find('td:eq(3)').text(totalPrice.toLocaleString('en-US',
                         { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                 }
             });

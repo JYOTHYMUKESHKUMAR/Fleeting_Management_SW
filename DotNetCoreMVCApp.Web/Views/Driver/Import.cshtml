@@ -3,52 +3,160 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Import Driver</h1>
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                Instructions
-            </div>
-            <div class="card-body">
-                <ol>
-                    <li>Download the sample template below.</li>
-                    <li>Fill in your driver data following the template format.</li>
-                    <li>Save the file as CSV.</li>
-                    <li>Upload the file using the form below.</li>
-                    <li>Click 'Import' to process your data.</li>
-                </ol>
-                <p><strong>Note:</strong> Ensure that the 'ID' field is a unique number for each Driver</p>
-                <a asp-action="DownloadTemplate" class="btn btn-info">
-                    <i class="fas fa-download"></i> Download Sample Template
-                </a>
+<link href="~/css/forms.css" rel="stylesheet" />
+
+<style>
+    /* Loading overlay */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--navy-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .step-number {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: var(--navy-primary);
+        color: white;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    .instructions-list li {
+        margin-bottom: 12px;
+    }
+</style>
+
+<!-- Container-fluid with padding -->
+<div class="container-fluid py-4">
+    <!-- Page Title -->
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Import Driver</h1>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-navy text-white">
+            <h3 class="mb-0"><i class="fas fa-file-import me-2"></i>Import Driver Data</h3>
+        </div>
+        <div class="card-body bg-light">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <!-- Instructions Card -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-navy-light">
+                            <h5 class="mb-0 text-navy"><i class="fas fa-info-circle me-2"></i>Instructions</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled instructions-list">
+                                <li><span class="step-number">1</span> <strong>Download</strong> the sample template using the button below.</li>
+                                <li><span class="step-number">2</span> <strong>Fill in</strong> your driver data following the template format.</li>
+                                <li><span class="step-number">3</span> <strong>Save</strong> the file as CSV format.</li>
+                                <li><span class="step-number">4</span> <strong>Upload</strong> the file using the form below.</li>
+                                <li><span class="step-number">5</span> <strong>Click 'Import'</strong> to process your data.</li>
+                            </ul>
+
+                            <div class="alert alert-info border-navy bg-navy-light mt-3">
+                                <i class="fas fa-exclamation-circle me-2"></i><strong>Important:</strong> Ensure that the 'ID' field is a unique number for each Driver. Duplicate IDs will result in import errors.
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <a asp-action="DownloadTemplate" class="btn btn-navy">
+                                    <i class="fas fa-download me-1"></i> Download Sample Template
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Form -->
+                    <form asp-action="Import" enctype="multipart/form-data" method="post" id="importForm">
+                        @Html.AntiForgeryToken()
+                        <div class="card mb-4">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy"><i class="fas fa-upload me-2"></i>Upload File</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="file" class="form-label text-navy fw-bold">Select CSV File</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-file-csv"></i></span>
+                                        <input type="file" id="file" name="file" class="form-control border-navy" accept=".csv" required />
+                                    </div>
+                                    <div class="form-text mt-2">Only CSV files are supported</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                                    </a>
+                                    <button type="submit" class="btn btn-navy">
+                                        <i class="fas fa-upload me-1"></i>Import
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-        <form asp-action="Import" enctype="multipart/form-data" method="post">
-            @Html.AntiForgeryToken()
-            <div class="form-group">
-                <label for="file" class="control-label">Select CSV File</label>
-                <input type="file" id="file" name="file" class="form-control-file" accept=".csv" required />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Import" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-            </div>
-        </form>
     </div>
 </div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('form').submit(function (e) {
+            // File type validation
+            $('#importForm').submit(function (e) {
                 var fileName = $('#file').val();
                 if (fileName) {
                     var extension = fileName.substr(fileName.lastIndexOf('.') + 1).toLowerCase();
                     if (extension != 'csv') {
                         alert('Please select a CSV file.');
                         e.preventDefault();
+                        return false;
                     }
+
+                    // Show loading overlay
+                    $('body').append('<div class="overlay"><div class="spinner"></div><div class="text-white mt-3">Importing data, please wait...</div></div>');
+                    return true;
                 }
             });
         });

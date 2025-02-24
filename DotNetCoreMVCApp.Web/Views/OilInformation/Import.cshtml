@@ -1,0 +1,256 @@
+﻿
+<link href="~/css/forms.css" rel="stylesheet" />
+
+<style>
+    .card {
+        margin-bottom: 1rem;
+        box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    }
+
+    .validation-summary-errors {
+        color: #dc3545;
+        padding: 10px;
+        margin-bottom: 1rem;
+        border: 1px solid #dc3545;
+        border-radius: 4px;
+        background-color: #f8d7da;
+    }
+
+    /* Loading overlay */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--navy-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .import-guidelines {
+        background-color: #e8f4ff;
+        border-left: 4px solid var(--navy-primary);
+        padding: 1rem;
+    }
+
+        .import-guidelines ul {
+            padding-left: 1.5rem;
+        }
+
+        .import-guidelines li {
+            margin-bottom: 0.5rem;
+        }
+
+    .file-upload-container {
+        border: 2px dashed #ced4da;
+        border-radius: 0.25rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s;
+        background-color: #f8f9fa;
+    }
+
+        .file-upload-container:hover, .file-upload-container.dragover {
+            border-color: var(--navy-primary);
+            background-color: #f0f8ff;
+        }
+
+        .file-upload-container input[type="file"] {
+            display: none;
+        }
+
+    .upload-button {
+        margin-top: 1rem;
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        color: var(--navy-primary);
+        margin-bottom: 1rem;
+    }
+
+    .selected-file {
+        margin-top: 1rem;
+        font-weight: bold;
+    }
+</style>
+
+<!-- Container-fluid with padding -->
+<div class="container-fluid py-4">
+    <!-- Page Title -->
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Import Oil Information</h1>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-navy text-white">
+                    <h3 class="mb-0"><i class="fas fa-file-import me-2"></i>Upload Oil Data</h3>
+                </div>
+                <div class="card-body bg-light">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <a asp-action="DownloadTemplate" class="btn btn-success">
+                                <i class="fas fa-download me-1"></i> Download Import Template
+                            </a>
+                            <span class="ms-2 text-muted">Download a template file with the correct format for importing</span>
+                        </div>
+                    </div>
+
+                    <form asp-action="Import" method="post" enctype="multipart/form-data" id="importForm">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="file-upload-container" id="drop-area">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-file-csv"></i>
+                                    </div>
+                                    <h5 class="text-navy">Drag & Drop CSV File Here</h5>
+                                    <p>- or -</p>
+                                    <label for="file" class="btn btn-navy upload-button">
+                                        <i class="fas fa-folder-open me-1"></i> Browse Files
+                                    </label>
+                                    <input type="file" name="file" id="file" accept=".csv" required />
+                                    <div class="selected-file mt-3" id="file-name"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="import-guidelines">
+                                    <h5 class="text-navy mb-3"><i class="fas fa-info-circle me-2"></i>Import Guidelines</h5>
+                                    <ul>
+                                        <li><strong>File Format:</strong> File must be in CSV format</li>
+                                        <li><strong>Required Fields:</strong> Car Information, Oil Type, Oil Brand</li>
+                                        <li><strong>Oil Type Values:</strong> Synthetic, Semi-Synthetic, Mineral, High Mileage, Conventional</li>
+                                        <li><strong>Date Format:</strong> Oil Change Date must use format MM/dd/yyyy HH:mm</li>
+                                        <li><strong>Number Format:</strong> Numbers (Price, Odometer) should use decimal point (.) not comma</li>
+                                        <li><strong>Odometer Values:</strong> Next Oil Change Odometer must be greater than Current Odometer</li>
+                                        <li><strong>Numeric Values:</strong> All numeric values must be positive</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back
+                            </a>
+                            <button type="submit" class="btn btn-navy" id="importButton" disabled>
+                                <i class="fas fa-upload me-1"></i>Import Data
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // File input change handler
+            $("#file").change(function () {
+                const fileName = $(this).val().split('\\').pop();
+                if (fileName) {
+                    $("#file-name").html('<i class="fas fa-file-csv me-2"></i>' + fileName);
+                    $("#importButton").prop('disabled', false);
+                } else {
+                    $("#file-name").text('');
+                    $("#importButton").prop('disabled', true);
+                }
+            });
+
+            // Drag and drop functionality
+            const dropArea = document.getElementById('drop-area');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropArea.classList.add('dragover');
+            }
+
+            function unhighlight() {
+                dropArea.classList.remove('dragover');
+            }
+
+            dropArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                if (files.length) {
+                    const file = files[0];
+                    if (file.name.toLowerCase().endsWith('.csv')) {
+                        document.getElementById('file').files = files;
+                        $("#file-name").html('<i class="fas fa-file-csv me-2"></i>' + file.name);
+                        $("#importButton").prop('disabled', false);
+                    } else {
+                        alert('Please select a CSV file.');
+                    }
+                }
+            }
+
+            // Form submission
+            $("#importForm").on("submit", function () {
+                if (!$("#file").val()) {
+                    alert('Please select a file to import.');
+                    return false;
+                }
+
+                // Show loading overlay
+                $('body').append('<div class="overlay"><div class="spinner"></div><div class="text-white mt-3">Importing data, please wait...</div></div>');
+
+                // Return true to allow form submission
+                return true;
+            });
+        });
+    </script>
+}

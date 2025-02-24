@@ -32,7 +32,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
             _context = context;
             _logger = logger;
         }
-        [Authorize(Roles = "Admin")]
+        /*[Authorize(Roles = "Admin")]*/
         public async Task<IActionResult> Index()
         {
             try

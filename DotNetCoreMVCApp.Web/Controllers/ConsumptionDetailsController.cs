@@ -245,7 +245,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-        [Authorize(Roles = "Admin")]
+        /*[Authorize(Roles = "Admin")]*/
         public async Task<IActionResult> Edit(int id)
         {
             _logger.LogInformation("Starting Edit action for ID: {Id}", id);
@@ -512,7 +512,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 model.LicensePlateList = new List<SelectListItem>();
             }
         }
-        [Authorize(Roles = "Admin")]
+        /*[Authorize(Roles = "Admin")]*/
         // GET: ConsumptionDetails/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

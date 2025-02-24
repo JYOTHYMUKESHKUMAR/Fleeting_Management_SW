@@ -3,18 +3,9 @@
     ViewData["Title"] = "Edit Driver";
 }
 
+<link href="~/css/forms.css" rel="stylesheet" />
+
 <style>
-    .button-container {
-        position: relative;
-        padding-top: 20px;
-    }
-
-    .btn-top-right {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
-
     .field-validation-error {
         margin-top: 0.25rem;
         font-size: 0.875rem;
@@ -35,140 +26,215 @@
         margin-top: 0.25rem;
     }
 
-    .required-field::after {
-        content: " *";
-        color: red;
+    /* Loading overlay */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--navy-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     .audit-info {
         font-size: 0.875rem;
-        color: #6c757d;
-        padding: 10px;
-        background-color: #f8f9fa;
+        padding: 15px;
         border-radius: 4px;
         margin-bottom: 20px;
+        background-color: var(--navy-light);
+        border-left: 4px solid var(--navy-primary);
     }
+
+        .audit-info strong {
+            color: var(--navy-primary);
+        }
 </style>
 
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Edit Driver</h1>
-            </div>
+<!-- Container-fluid with padding -->
+<div class="container-fluid py-4">
+    <!-- Page Title -->
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="text-navy border-navy py-2" style="border-top: 2px solid; border-bottom: 2px solid; display: inline-block; padding-left: 2rem; padding-right: 2rem;">Edit Driver</h1>
         </div>
     </div>
-</div>
 
-<section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card card-secondary">
-                    <div class="card-header">
-                        <h3 class="card-title">Edit Driver Details</h3>
-                    </div>
-
+    <!-- Main Content -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-navy text-white">
+            <h3 class="mb-0"><i class="fas fa-user-edit me-2"></i>Edit Driver Details</h3>
+        </div>
+        <div class="card-body bg-light">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
                     <form asp-action="Edit" method="post" id="editDriverForm">
                         @Html.AntiForgeryToken()
-                        <div class="card-body">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                            <input type="hidden" asp-for="Id" />
-                            <input type="hidden" asp-for="CreatedBy" />
-                            <input type="hidden" asp-for="CreatedOn" />
-                            <input type="hidden" asp-for="UpdatedBy" />
-                            <input type="hidden" asp-for="UpdatedOn" />
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="CreatedBy" />
+                        <input type="hidden" asp-for="CreatedOn" />
+                        <input type="hidden" asp-for="UpdatedBy" />
+                        <input type="hidden" asp-for="UpdatedOn" />
 
-                            <div class="audit-info">
-                                <div><strong>Staff ID:</strong> @Model.Id</div>
-                                <div><strong>Created By:</strong> @(Model.CreatedBy ?? "System") on @(Model.CreatedOn?.ToString("dd/MM/yyyy HH:mm") ?? "-")</div>
-                                @if (!string.IsNullOrEmpty(Model.UpdatedBy))
-                                {
-                                    <div><strong>Last Updated By:</strong> @Model.UpdatedBy on @(Model.UpdatedOn?.ToString("dd/MM/yyyy HH:mm") ?? "-")</div>
-                                }
+                        <!-- Audit Information -->
+                        <div class="audit-info">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <strong><i class="fas fa-id-badge me-1"></i> Staff ID:</strong> @Model.Id
+                                </div>
+                                <div class="col-md-8">
+                                    <strong><i class="fas fa-plus-circle me-1"></i> Created By:</strong> @(Model.CreatedBy ?? "System") on @(Model.CreatedOn?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                                </div>
                             </div>
+                            @if (!string.IsNullOrEmpty(Model.UpdatedBy))
+                            {
+                                <div class="mt-2">
+                                    <strong><i class="fas fa-edit me-1"></i> Last Updated By:</strong> @Model.UpdatedBy on @(Model.UpdatedOn?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                                </div>
+                            }
+                        </div>
 
-                            <div class="form-group">
-                                <label asp-for="Name" class="control-label required-field">Name</label>
-                                <input asp-for="Name" class="form-control" required
-                                       maxlength="100"
-                                       data-val="true"
-                                       data-val-required="Name is required"
-                                       data-val-maxlength-max="100"
-                                       data-val-maxlength="Name cannot exceed 100 characters" />
-                                <span asp-validation-for="Name" class="text-danger field-validation-error"></span>
+                        <div class="card mb-4">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Personal Information</h5>
                             </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label text-navy fw-bold">Name <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-user"></i></span>
+                                        <input asp-for="Name" class="form-control border-navy" required
+                                               maxlength="100"
+                                               data-val="true"
+                                               data-val-required="Name is required"
+                                               data-val-maxlength-max="100"
+                                               data-val-maxlength="Name cannot exceed 100 characters" />
+                                    </div>
+                                    <span asp-validation-for="Name" class="text-danger field-validation-error"></span>
+                                </div>
 
-                            <div class="form-group">
-                                <label asp-for="QatarId" class="control-label required-field">Qatar ID</label>
-                                <input asp-for="QatarId" class="form-control" required
-                                       maxlength="11"
-                                       pattern="\d{11}"
-                                       data-val="true"
-                                       data-val-required="Qatar ID is required"
-                                       data-val-regex="Qatar ID must be exactly 11 digits"
-                                       data-val-regex-pattern="^\d{11}$" />
-                                <span asp-validation-for="QatarId" class="text-danger field-validation-error"></span>
-                                <small class="form-hint">11-digit Qatar ID number</small>
-                            </div>
+                                <div class="mb-3">
+                                    <label asp-for="Nationality" class="form-label text-navy fw-bold">Nationality <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-globe"></i></span>
+                                        <input asp-for="Nationality" class="form-control border-navy" required
+                                               maxlength="50"
+                                               data-val="true"
+                                               data-val-required="Nationality is required"
+                                               data-val-maxlength-max="50"
+                                               data-val-maxlength="Nationality cannot exceed 50 characters" />
+                                    </div>
+                                    <span asp-validation-for="Nationality" class="text-danger field-validation-error"></span>
+                                </div>
 
-                            <div class="form-group">
-                                <label asp-for="ContactNumber" class="control-label">Contact Number</label>
-                                <input asp-for="ContactNumber" class="form-control"
-                                       maxlength="20"
-                                       data-val="true"
-                                       data-val-maxlength-max="20"
-                                       data-val-maxlength="Contact number cannot exceed 20 characters" />
-                                <span asp-validation-for="ContactNumber" class="text-danger field-validation-error"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="QIDExpiryDate" class="control-label required-field">QID Expiry Date</label>
-                                <input asp-for="QIDExpiryDate" class="form-control" type="date" required
-                                       data-val="true"
-                                       data-val-required="QID Expiry Date is required" />
-                                <span asp-validation-for="QIDExpiryDate" class="text-danger field-validation-error"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="Nationality" class="control-label required-field">Nationality</label>
-                                <input asp-for="Nationality" class="form-control" required
-                                       maxlength="50"
-                                       data-val="true"
-                                       data-val-required="Nationality is required"
-                                       data-val-maxlength-max="50"
-                                       data-val-maxlength="Nationality cannot exceed 50 characters" />
-                                <span asp-validation-for="Nationality" class="text-danger field-validation-error"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="DOB" class="control-label required-field">Date of Birth</label>
-                                <input asp-for="DOB" class="form-control" type="date" required
-                                       data-val="true"
-                                       data-val-required="Date of Birth is required" />
-                                <span asp-validation-for="DOB" class="text-danger field-validation-error"></span>
-                            </div>
-
-                            <div class="alert alert-info mt-3">
-                                <small><i class="fas fa-info-circle"></i> Fields marked with * are required</small>
+                                <div class="mb-3">
+                                    <label asp-for="DOB" class="form-label text-navy fw-bold">Date of Birth <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-birthday-cake"></i></span>
+                                        <input asp-for="DOB" class="form-control border-navy" type="date" required
+                                               data-val="true"
+                                               data-val-required="Date of Birth is required" />
+                                    </div>
+                                    <span asp-validation-for="DOB" class="text-danger field-validation-error"></span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-primary" id="submitButton">
-                                <i class="fas fa-save"></i> Save Changes
-                            </button>
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Back to List
-                            </a>
+                        <div class="card mb-4">
+                            <div class="card-header bg-navy-light">
+                                <h5 class="mb-0 text-navy">Identification & Contact</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="QatarId" class="form-label text-navy fw-bold">Qatar ID <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-passport"></i></span>
+                                        <input asp-for="QatarId" class="form-control border-navy" required
+                                               maxlength="11"
+                                               pattern="\d{11}"
+                                               data-val="true"
+                                               data-val-required="Qatar ID is required"
+                                               data-val-regex="Qatar ID must be exactly 11 digits"
+                                               data-val-regex-pattern="^\d{11}$" />
+                                    </div>
+                                    <span asp-validation-for="QatarId" class="text-danger field-validation-error"></span>
+                                    <small class="form-hint">11-digit Qatar ID number</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="QIDExpiryDate" class="form-label text-navy fw-bold">QID Expiry Date <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-calendar-alt"></i></span>
+                                        <input asp-for="QIDExpiryDate" class="form-control border-navy" type="date" required
+                                               data-val="true"
+                                               data-val-required="QID Expiry Date is required" />
+                                    </div>
+                                    <span asp-validation-for="QIDExpiryDate" class="text-danger field-validation-error"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="ContactNumber" class="form-label text-navy fw-bold">Contact Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-navy text-white"><i class="fas fa-phone"></i></span>
+                                        <input asp-for="ContactNumber" class="form-control border-navy"
+                                               maxlength="20"
+                                               data-val="true"
+                                               data-val-maxlength-max="20"
+                                               data-val-maxlength="Contact number cannot exceed 20 characters" />
+                                    </div>
+                                    <span asp-validation-for="ContactNumber" class="text-danger field-validation-error"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="alert alert-info border-navy bg-navy-light">
+                                    <i class="fas fa-info-circle"></i> Fields marked with <span class="text-danger">*</span> are required
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                                    </a>
+                                    <button type="submit" class="btn btn-navy" id="submitButton">
+                                        <i class="fas fa-save me-1"></i>Save Changes
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
 @section Scripts {
     @{
@@ -264,6 +330,10 @@
                 submitHandler: function (form) {
                     $("#submitButton").prop('disabled', true)
                         .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+
+                    // Show loading overlay
+                    $('body').append('<div class="overlay"><div class="spinner"></div><div class="text-white mt-3">Saving changes, please wait...</div></div>');
+
                     form.submit();
                 }
             });
