@@ -159,6 +159,27 @@ namespace DotNetCoreMVCApp.Web.Controllers
                     return View(model);
                 }
 
+                // Check if odometer reading is greater than previous reading
+                if (model.OdometerReading.HasValue)
+                {
+                    var lastReading = await _context.ConsumptionDetails
+                        .Where(c => c.LicensePlate == model.LicensePlate &&
+                               c.OdometerReading.HasValue &&
+                               !c.IsDeleted)
+                        .OrderByDescending(c => c.SaleTime)
+                        .Select(c => c.OdometerReading)
+                        .FirstOrDefaultAsync();
+
+                    if (lastReading.HasValue && model.OdometerReading <= lastReading)
+                    {
+                        ModelState.AddModelError("OdometerReading", $"Odometer reading must be greater than the previous reading ({lastReading.Value})");
+                        model.DriverList = await GetDriverListAsync();
+                        model.ProductNameList = GetProductNameList();
+                        model.LicensePlateList = await GetVehicleLicensePlateListAsync();
+                        return View(model);
+                    }
+                }
+
                 using var transaction = await _context.Database.BeginTransactionAsync();
 
                 try
@@ -353,6 +374,26 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 return View(model);
             }
 
+            // Check if odometer reading is greater than previous reading
+            if (model.OdometerReading.HasValue)
+            {
+                var lastReading = await _context.ConsumptionDetails
+                    .Where(c => c.LicensePlate == model.LicensePlate &&
+                           c.OdometerReading.HasValue &&
+                           !c.IsDeleted &&
+                           c.Id != id) // Exclude current record
+                    .OrderByDescending(c => c.SaleTime)
+                    .Select(c => c.OdometerReading)
+                    .FirstOrDefaultAsync();
+
+                if (lastReading.HasValue && model.OdometerReading <= lastReading)
+                {
+                    ModelState.AddModelError("OdometerReading", $"Odometer reading must be greater than the previous reading ({lastReading.Value})");
+                    await PrepareViewModelDropdowns(model);
+                    return View(model);
+                }
+            }
+
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
@@ -539,7 +580,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-        
+
         // POST: ConsumptionDetails/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -568,6 +609,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
         // API endpoint to get vehicle details
         [HttpGet]
         public async Task<IActionResult> GetVehicleDetails(string licensePlate)
@@ -596,6 +638,39 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 return StatusCode(500, "Error fetching vehicle details");
             }
         }
+
+        // API endpoint to get the last odometer reading for a vehicle
+        [HttpGet]
+        public async Task<IActionResult> GetLastOdometerReading(string licensePlate)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(licensePlate))
+                {
+                    return BadRequest("License plate is required");
+                }
+
+                var lastReading = await _context.ConsumptionDetails
+                    .Where(c => c.LicensePlate == licensePlate &&
+                           c.OdometerReading.HasValue &&
+                           !c.IsDeleted)
+                    .OrderByDescending(c => c.SaleTime)
+                    .Select(c => new
+                    {
+                        OdometerReading = c.OdometerReading,
+                        SaleTime = c.SaleTime
+                    })
+                    .FirstOrDefaultAsync();
+
+                return Json(lastReading);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching last odometer reading for license plate: {LicensePlate}", licensePlate);
+                return StatusCode(500, "Error fetching last odometer reading");
+            }
+        }
+
         public IActionResult Export()
         {
             return View();
@@ -924,6 +999,30 @@ namespace DotNetCoreMVCApp.Web.Controllers
                                 throw new Exception($"Invalid Sale Time format: {saleTimeStr}");
                             }
 
+                            // Parse odometer reading and validate against previous readings
+                            decimal? odometerReading = null;
+                            if (decimal.TryParse(GetValue(row, "OdometerReading", "Odometer Reading"), out decimal parsedReading))
+                            {
+                                odometerReading = parsedReading;
+
+                                // Check if the odometer reading is greater than previous readings
+                                if (odometerReading.HasValue && !string.IsNullOrWhiteSpace(licensePlate))
+                                {
+                                    var lastReading = await _context.ConsumptionDetails
+                                        .Where(c => c.LicensePlate == licensePlate &&
+                                              c.OdometerReading.HasValue &&
+                                              !c.IsDeleted)
+                                        .OrderByDescending(c => c.SaleTime)
+                                        .Select(c => c.OdometerReading)
+                                        .FirstOrDefaultAsync();
+
+                                    if (lastReading.HasValue && odometerReading <= lastReading)
+                                    {
+                                        throw new Exception($"Odometer reading ({odometerReading}) must be greater than the previous reading ({lastReading})");
+                                    }
+                                }
+                            }
+
                             var consumptionDetails = new ConsumptionDetails
                             {
                                 LicensePlate = licensePlate,
@@ -941,7 +1040,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                                 GroupName = GetValue(row, "GroupName", "Group Name")?.Trim(),
                                 FleetName = GetValue(row, "FleetName", "Fleet Name")?.Trim(),
                                 CostCenter = GetValue(row, "CostCenter", "Cost Center")?.Trim(),
-                                OdometerReading = decimal.TryParse(GetValue(row, "OdometerReading", "Odometer Reading"), out decimal odometerReading) ? odometerReading : null,
+                                OdometerReading = odometerReading,
                                 Remarks = GetValue(row, "Remarks")?.Trim(),
                                 CreatedBy = User.Identity?.Name ?? "System",
                                 CreatedOn = DateTime.UtcNow,
@@ -1069,7 +1168,5 @@ namespace DotNetCoreMVCApp.Web.Controllers
         {
             return _context.ConsumptionDetails.Any(c => c.Id == id && !c.IsDeleted);
         }
-
-
     }
 }

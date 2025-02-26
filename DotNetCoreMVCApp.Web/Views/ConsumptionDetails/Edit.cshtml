@@ -359,6 +359,12 @@
         moment.tz.setDefault('Asia/Qatar');
 
         $(document).ready(function () {
+            // Variable to store last odometer reading
+            let lastOdometerReading = null;
+            let lastReadingDate = null;
+            let currentVehicleId = '@Model.Id';
+            let initialLicensePlate = $('#LicensePlate').val();
+
             // Initialize Select2 for dropdowns
             $('.select2bs4').select2({
                 theme: 'bootstrap4',
@@ -433,6 +439,77 @@
                 }
             });
 
+            // Function to fetch last odometer reading
+            function fetchLastOdometerReading(licensePlate) {
+                $.get('/ConsumptionDetails/GetLastOdometerReading', { licensePlate: licensePlate })
+                    .done(function (data) {
+                        if (data && data.odometerReading) {
+                            lastOdometerReading = parseFloat(data.odometerReading);
+                            lastReadingDate = new Date(data.saleTime);
+
+                            // Set helper text
+                            $('#odometer-helper').remove();
+                            $('#OdometerReading').after(
+                                '<div id="odometer-helper" class="form-text text-info">' +
+                                'Last reading: ' + lastOdometerReading.toFixed(2) + ' on ' +
+                                moment(lastReadingDate).format('DD-MMM-YYYY') +
+                                '. New reading must be higher.</div>'
+                            );
+
+                            // Validate current value if any
+                            validateOdometerReading();
+                        } else {
+                            lastOdometerReading = null;
+                            lastReadingDate = null;
+                            $('#odometer-helper').remove();
+                            $('#OdometerReading').after(
+                                '<div id="odometer-helper" class="form-text text-muted">' +
+                                'No previous odometer reading found for this vehicle.</div>'
+                            );
+                        }
+                    })
+                    .fail(function (error) {
+                        console.error('Error fetching odometer reading:', error);
+                        toastr.error('Error fetching previous odometer reading.');
+                    });
+            }
+
+            // Validate odometer reading as user types
+            $('#OdometerReading').on('input', function () {
+                validateOdometerReading();
+            });
+
+            // Odometer validation function
+            function validateOdometerReading() {
+                const currentValue = parseFloat($('#OdometerReading').val());
+
+                // Clear previous validation
+                $('#OdometerReading').removeClass('is-invalid is-valid');
+                $('#odometer-error').remove();
+
+                // If empty value, no validation needed (field is optional)
+                if (!$('#OdometerReading').val()) {
+                    return true;
+                }
+
+                // If we have a last reading and current input, validate
+                if (lastOdometerReading !== null && !isNaN(currentValue)) {
+                    if (currentValue <= lastOdometerReading) {
+                        $('#OdometerReading').addClass('is-invalid');
+                        $('#OdometerReading').after(
+                            '<div id="odometer-error" class="invalid-feedback">' +
+                            'Odometer reading must be greater than the previous reading (' +
+                            lastOdometerReading.toFixed(2) + ').</div>'
+                        );
+                        return false;
+                    } else {
+                        $('#OdometerReading').addClass('is-valid');
+                        return true;
+                    }
+                }
+                return true;
+            }
+
             // Handle license plate change
             $('#LicensePlate').change(function () {
                 var selectedLicensePlate = $(this).val();
@@ -449,6 +526,9 @@
                             // Update any dependent fields
                             if (data.fleetName) $('#FleetName').val(data.fleetName);
                             if (data.groupName) $('#GroupName').val(data.groupName);
+
+                            // Fetch the last odometer reading for this vehicle
+                            fetchLastOdometerReading(selectedLicensePlate);
                         })
                         .fail(function (error) {
                             console.error('Error fetching vehicle details:', error);
@@ -464,6 +544,11 @@
                     $('#OfflineLimit').val('');
                     $('#FleetName').val('');
                     $('#GroupName').val('');
+
+                    // Clear odometer validation
+                    lastOdometerReading = null;
+                    lastReadingDate = null;
+                    $('#odometer-helper').remove();
                 }
             });
 
@@ -474,13 +559,36 @@
                 return fuelQuantity <= offlineLimit;
             }, "Fuel quantity cannot exceed offline limit");
 
+            $.validator.addMethod("greaterThanLastReading", function (value, element) {
+                // If there's no value or no last reading, pass validation
+                if (!value || lastOdometerReading === null) {
+                    return true;
+                }
+                // Check if current value is greater than last reading
+                return parseFloat(value) > lastOdometerReading;
+            }, function () {
+                return "Odometer reading must be greater than the previous reading (" + lastOdometerReading.toFixed(2) + ").";
+            });
+
             // Apply custom validation rules
             $("#FuelQuantity").rules("add", {
                 maxFuelQuantity: true
             });
 
-            // Handle form submission with loading overlay
-            $("#editConsumptionForm").on("submit", function() {
+            $("#OdometerReading").rules("add", {
+                greaterThanLastReading: true
+            });
+
+            // Handle form submission with validation
+            $("#editConsumptionForm").on("submit", function (e) {
+                // If the form is valid, but odometer validation fails, prevent submission
+                if ($(this).valid() && $('#OdometerReading').val() && !validateOdometerReading()) {
+                    e.preventDefault();
+                    toastr.error("Odometer reading must be greater than the previous reading.");
+                    $('#OdometerReading').focus();
+                    return false;
+                }
+
                 // If the form is valid, show loading overlay
                 if ($(this).valid()) {
                     $('body').append('<div class="overlay"><div class="spinner"></div></div>');
@@ -492,6 +600,11 @@
             // Initialize the form
             initializeInvoiceMonthPicker();
             calculateTotalCost();
+
+            // Initialize odometer reading validation for current vehicle
+            if (initialLicensePlate) {
+                fetchLastOdometerReading(initialLicensePlate);
+            }
         });
     </script>
 }
