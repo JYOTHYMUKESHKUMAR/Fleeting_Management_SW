@@ -9,7 +9,6 @@ namespace DotNetCoreMVCApp.Models.Web
 {
     public class DriverImportViewModel
     {
-        
         public string Id { get; set; }
 
         [Display(Name = "Driver Name")]
@@ -33,5 +32,8 @@ namespace DotNetCoreMVCApp.Models.Web
 
         [Display(Name = "Date of Birth")]
         public DateTime DOB { get; set; }
+
+        [Display(Name = "Is Deactivated")]
+        public bool IsDeactivated { get; set; }
     }
 }

@@ -209,6 +209,15 @@
                                     </div>
                                     <span asp-validation-for="ContactNumber" class="text-danger field-validation-error"></span>
                                 </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input asp-for="IsDeactivated" class="form-check-input" type="checkbox" />
+                                        <label asp-for="IsDeactivated" class="form-check-label text-navy fw-bold">Deactivate Driver</label>
+                                    </div>
+                                    <span asp-validation-for="IsDeactivated" class="text-danger field-validation-error"></span>
+                                    <small class="form-hint">Check this box to deactivate the driver (driver will be inactive but not deleted)</small>
+                                </div>
                             </div>
                         </div>
 

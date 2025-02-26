@@ -5,7 +5,7 @@
 <link href="~/datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
 
 <style>
-   
+
 
     .alert-success-green {
         color: #ffffff;
@@ -34,6 +34,24 @@
     .badge-exp-danger {
         background-color: #dc3545;
         color: #fff;
+    }
+
+    .badge-status-active {
+        background-color: #28a745;
+        color: #fff;
+        padding: 0.25em 0.6em;
+        font-size: 85%;
+        font-weight: 700;
+        border-radius: 0.25rem;
+    }
+
+    .badge-status-inactive {
+        background-color: #dc3545;
+        color: #fff;
+        padding: 0.25em 0.6em;
+        font-size: 85%;
+        font-weight: 700;
+        border-radius: 0.25rem;
     }
 </style>
 
@@ -91,7 +109,7 @@
                                     <th>Type</th>
                                     <th>Brand</th>
                                     <th>Model</th>
-                                   
+                                    <th>Status</th>
                                     <th>Tank Cap. (L)</th>
                                     <th>Fuel Limit (L)</th>
                                     <th>Reg. Expiry</th>
@@ -103,7 +121,7 @@
                             <tbody>
                                 @foreach (var vehicle in Model)
                                 {
-                                    <tr>
+                                    <tr data-created-on="@vehicle.CreatedOn.ToString("yyyyMMddHHmmss")">
                                         <td>@vehicle.VehicleId</td>
                                         <td>@vehicle.LicensePlate</td>
                                         <td>@vehicle.WoqodLicensePlate</td>
@@ -111,7 +129,16 @@
                                         <td>@vehicle.VehicleType</td>
                                         <td>@vehicle.VehicleBrand</td>
                                         <td>@vehicle.VehicleModel</td>
-                                        
+                                        <td>
+                                            @if (vehicle.IsDeactivated)
+                                            {
+                                                <span class="badge-status-inactive">Inactive</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge-status-active">Active</span>
+                                            }
+                                        </td>
                                         <td>@vehicle.FuelTankCapacity.ToString("F2")</td>
                                         <td>@vehicle.FuelLimit.ToString("F2")</td>
                                         <td>
@@ -183,6 +210,8 @@
                 "info": true,
                 "autoWidth": false,
                 "responsive": true,
+                "pageLength": 25, // Default show 25 records per page
+                "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]], // Page length options
                 "language": {
                     "emptyTable": "No vehicles available",
                     "search": "Search:",
@@ -193,7 +222,7 @@
                         "previous": "Previous"
                     }
                 },
-                "order": [[0, "asc"]], // Sort by Vehicle ID by default
+                "order": [[0, "desc"]], // Sort by first column (Vehicle ID) by default, newest first
                 "columnDefs": [
                     {
                         "targets": [8, 9], // Fuel capacity and limit columns
@@ -212,7 +241,13 @@
                         "targets": -1,
                         "orderable": false // Disable sorting on Actions column
                     }
-                ]
+                ],
+                "createdRow": function (row, data, dataIndex) {
+                    // Add custom class to rows where vehicle is deactivated
+                    if ($(data[7]).text().trim() === 'Inactive') {
+                        $(row).addClass('table-secondary');
+                    }
+                }
             });
 
             // Auto-hide success and error messages

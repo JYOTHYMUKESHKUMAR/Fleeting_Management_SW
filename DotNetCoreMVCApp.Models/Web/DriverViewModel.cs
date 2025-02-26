@@ -12,7 +12,6 @@ namespace DotNetCoreMVCApp.Models.Web
 {
     public class DriverViewModel
     {
-        
         public int Id { get; set; }
 
         public string Name { get; set; }
@@ -32,6 +31,9 @@ namespace DotNetCoreMVCApp.Models.Web
         [Display(Name = "Date of Birth")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime DOB { get; set; }
+
+        [Display(Name = "Is Deactivated")]
+        public bool IsDeactivated { get; set; }
 
         [Display(Name = "Created By")]
         public string? CreatedBy { get; set; }

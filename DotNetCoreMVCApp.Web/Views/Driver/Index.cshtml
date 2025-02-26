@@ -7,7 +7,7 @@
 <link href="~/datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
 
 <style>
-    
+
     .alert-success-green {
         color: #ffffff;
         background-color: #28a745;
@@ -48,6 +48,14 @@
     .badge {
         font-size: 85%;
     }
+
+    .badge-secondary {
+        background-color: #6c757d;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+    }
 </style>
 
 <div class="container-fluid">
@@ -66,7 +74,7 @@
                     </a>
                     <a asp-action="Export" class="btn btn-primary">Export</a>
                     @* <a href="#" class="btn btn-info" onclick="exportToExcel()">
-                        <i class="fas fa-file-export"></i> Export
+                    <i class="fas fa-file-export"></i> Export
                     </a> *@
                 </div>
             </div>
@@ -93,6 +101,7 @@
                             <th>QID Expiry</th>
                             <th>Nationality</th>
                             <th>Date of Birth</th>
+                            <th>Status</th>
                             @* <th>Created By</th>
                             <th>Last Updated</th> *@
                             <th>Actions</th>
@@ -101,7 +110,7 @@
                     <tbody>
                         @foreach (var driver in Model)
                         {
-                            <tr>
+                            <tr class="@(driver.IsDeactivated ? "table-secondary" : "")">
                                 <td>@driver.Id</td>
                                 <td>@driver.Name</td>
                                 <td>@driver.QatarId</td>
@@ -119,23 +128,33 @@
                                 </td>
                                 <td>@driver.Nationality</td>
                                 <td>@driver.DOB.ToString("dd/MM/yyyy")</td>
-                                @* <td>
-                                    @driver.CreatedBy<br />
-                                    <small class="text-muted">@driver.CreatedOn?.ToString("dd/MM/yyyy HH:mm")</small>
-                                </td>
                                 <td>
-                                    @if (!string.IsNullOrEmpty(driver.UpdatedBy))
+                                    @if (driver.IsDeactivated)
                                     {
-                                        @driver.UpdatedBy
-
-                                        <br />
-                                        <small class="text-muted">@driver.UpdatedOn?.ToString("dd/MM/yyyy HH:mm")</small>
+                                        <span class="badge badge-secondary">Deactivated</span>
                                     }
                                     else
                                     {
-                                        <span>-</span>
+                                        <span class="badge badge-success">Active</span>
                                     }
-                                </td> *@
+                                </td>
+                                @* <td>
+                            @driver.CreatedBy<br />
+                            <small class="text-muted">@driver.CreatedOn?.ToString("dd/MM/yyyy HH:mm")</small>
+                            </td>
+                            <td>
+                            @if (!string.IsNullOrEmpty(driver.UpdatedBy))
+                            {
+                            @driver.UpdatedBy
+
+                            <br />
+                            <small class="text-muted">@driver.UpdatedOn?.ToString("dd/MM/yyyy HH:mm")</small>
+                            }
+                            else
+                            {
+                            <span>-</span>
+                            }
+                            </td> *@
                                 <td>
                                     <div class="action-buttons">
                                         <a asp-action="Edit" asp-route-id="@driver.Id"
@@ -175,7 +194,8 @@
                 "autoWidth": false,
                 "responsive": true,
                 "pageLength": 25,
-                "dom": 'Bfrtip',
+                "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
+                "dom": 'Blfrtip',
                 "buttons": [
                     'copy', 'csv', 'excel', 'pdf', 'print'
                 ],

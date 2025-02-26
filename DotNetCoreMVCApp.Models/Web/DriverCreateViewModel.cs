@@ -16,20 +16,16 @@ namespace DotNetCoreMVCApp.Models.Web
         {
             var dbContext = (ApplicationDbContext)validationContext
                 .GetService(typeof(ApplicationDbContext));
-
             var qatarId = value as string;
             var driverViewModel = validationContext.ObjectInstance as DriverCreateViewModel;
-
             var exists = dbContext.DriverSet.Any(d =>
                 d.QatarId == qatarId &&
                 !d.IsDeleted &&
                 d.Id != driverViewModel.Id);  // Exclude current driver when updating
-
             if (exists)
             {
                 return new ValidationResult("This Qatar ID is already registered with another driver.");
             }
-
             return ValidationResult.Success;
         }
     }
@@ -37,7 +33,6 @@ namespace DotNetCoreMVCApp.Models.Web
     public class DriverCreateViewModel
     {
         [Required(ErrorMessage = "Driver ID is required")]
-        
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
@@ -69,5 +64,8 @@ namespace DotNetCoreMVCApp.Models.Web
         [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)]
         public DateTime DOB { get; set; }
+
+        [Display(Name = "Is Deactivated")]
+        public bool IsDeactivated { get; set; }
     }
 }

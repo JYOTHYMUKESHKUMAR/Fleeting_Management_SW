@@ -48,6 +48,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                         QIDExpiryDate = d.QIDExpiryDate,
                         Nationality = d.Nationality,
                         DOB = d.DOB,
+                        IsDeactivated = d.IsDeactivated,
                         CreatedBy = d.CreatedBy,
                         CreatedOn = d.CreatedOn,
                         UpdatedBy = d.UpdatedBy,
@@ -97,6 +98,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                     QIDExpiryDate = model.QIDExpiryDate,
                     Nationality = model.Nationality,
                     DOB = model.DOB,
+                    IsDeactivated = model.IsDeactivated,
                     CreatedBy = User.Identity?.Name ?? "System",
                     CreatedOn = DateTime.UtcNow,
                     IsDeleted = false
@@ -152,6 +154,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 QIDExpiryDate = driver.QIDExpiryDate,
                 Nationality = driver.Nationality,
                 DOB = driver.DOB,
+                IsDeactivated = driver.IsDeactivated,
                 CreatedBy = driver.CreatedBy,
                 CreatedOn = driver.CreatedOn,
                 UpdatedBy = driver.UpdatedBy,
@@ -202,6 +205,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 driver.QIDExpiryDate = model.QIDExpiryDate;
                 driver.Nationality = model.Nationality;
                 driver.DOB = model.DOB;
+                driver.IsDeactivated = model.IsDeactivated;
                 driver.UpdatedBy = User.Identity?.Name ?? "System";
                 driver.UpdatedOn = DateTime.UtcNow;
 
@@ -342,9 +346,9 @@ namespace DotNetCoreMVCApp.Web.Controllers
             // Headers
             var headers = new[]
             {
-        "ID", "Name", "Qatar ID", "Contact Number", "QID Expiry Date",
-        "Nationality", "Date of Birth"
-    };
+                "ID", "Name", "Qatar ID", "Contact Number", "QID Expiry Date",
+                "Nationality", "Date of Birth", "Is Deactivated"
+            };
 
             for (int i = 0; i < headers.Length; i++)
             {
@@ -365,6 +369,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 worksheet.Cells[row, 5].Value = driver.QIDExpiryDate.ToString("yyyy-MM-dd");
                 worksheet.Cells[row, 6].Value = driver.Nationality;
                 worksheet.Cells[row, 7].Value = driver.DOB.ToString("yyyy-MM-dd");
+                worksheet.Cells[row, 8].Value = driver.IsDeactivated ? "Yes" : "No";
             }
 
             worksheet.Cells.AutoFitColumns();
@@ -385,6 +390,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
             csv.WriteField("QID Expiry Date");
             csv.WriteField("Nationality");
             csv.WriteField("Date of Birth");
+            csv.WriteField("Is Deactivated");
             csv.NextRecord();
 
             // Write data
@@ -397,6 +403,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 csv.WriteField(driver.QIDExpiryDate.ToString("yyyy-MM-dd"));
                 csv.WriteField(driver.Nationality);
                 csv.WriteField(driver.DOB.ToString("yyyy-MM-dd"));
+                csv.WriteField(driver.IsDeactivated ? "Yes" : "No");
                 csv.NextRecord();
             }
 
@@ -422,7 +429,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
             document.Add(title);
 
             // Create table
-            var table = new PdfPTable(7) // Number of columns
+            var table = new PdfPTable(8) // Updated number of columns to include IsDeactivated
             {
                 WidthPercentage = 100,
                 SpacingBefore = 10f,
@@ -430,12 +437,12 @@ namespace DotNetCoreMVCApp.Web.Controllers
             };
 
             // Set column widths
-            float[] widths = new float[] { 5f, 15f, 15f, 12f, 12f, 12f, 12f };
+            float[] widths = new float[] { 5f, 15f, 15f, 12f, 12f, 12f, 12f, 10f };
             table.SetWidths(widths);
 
             // Add headers
             var headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10);
-            string[] headers = { "ID", "Name", "Qatar ID", "Contact", "QID Expiry", "Nationality", "DOB" };
+            string[] headers = { "ID", "Name", "Qatar ID", "Contact", "QID Expiry", "Nationality", "DOB", "Deactivated" };
             foreach (string header in headers)
             {
                 var cell = new PdfPCell(new Phrase(header, headerFont))
@@ -458,6 +465,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 table.AddCell(new PdfPCell(new Phrase(driver.QIDExpiryDate.ToString("yyyy-MM-dd"), normalFont)));
                 table.AddCell(new PdfPCell(new Phrase(driver.Nationality, normalFont)));
                 table.AddCell(new PdfPCell(new Phrase(driver.DOB.ToString("yyyy-MM-dd"), normalFont)));
+                table.AddCell(new PdfPCell(new Phrase(driver.IsDeactivated ? "Yes" : "No", normalFont)));
             }
 
             document.Add(table);
@@ -475,9 +483,9 @@ namespace DotNetCoreMVCApp.Web.Controllers
         {
             try
             {
-                var templateContent = "Id,Name,QatarId,ContactNumber,QIDExpiryDate,Nationality,DOB\n" +
-                                    "1001,John Doe,12345678901,12345678,2025-12-31,Qatari,1990-01-01\n" +
-                                    "1002,Jane Smith,98765432109,87654321,2025-12-31,Indian,1992-05-15";
+                var templateContent = "Id,Name,QatarId,ContactNumber,QIDExpiryDate,Nationality,DOB,IsDeactivated\n" +
+                                    "1001,John Doe,12345678901,12345678,2025-12-31,Qatari,1990-01-01,False\n" +
+                                    "1002,Jane Smith,98765432109,87654321,2025-12-31,Indian,1992-05-15,False";
 
                 var byteArray = Encoding.UTF8.GetBytes(templateContent);
                 return File(byteArray, "text/csv", "DriverImportTemplate.csv");
@@ -567,6 +575,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                             driver.QIDExpiryDate = record.QIDExpiryDate;
                             driver.Nationality = record.Nationality;
                             driver.DOB = record.DOB;
+                            driver.IsDeactivated = record.IsDeactivated;
                             driver.UpdatedBy = User.Identity?.Name ?? "System";
                             driver.UpdatedOn = DateTime.UtcNow;
                             updatedCount++;
@@ -588,6 +597,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                                 QIDExpiryDate = record.QIDExpiryDate,
                                 Nationality = record.Nationality,
                                 DOB = record.DOB,
+                                IsDeactivated = record.IsDeactivated,
                                 CreatedBy = User.Identity?.Name ?? "System",
                                 CreatedOn = DateTime.UtcNow,
                                 IsDeleted = false
@@ -615,7 +625,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
 
                 TempData["SuccessMessage"] = $"Successfully imported {createdCount} new drivers and updated {updatedCount} existing drivers.";
                 return RedirectToAction(nameof(Index));
-                }
+            }
             catch (CsvHelper.HeaderValidationException ex)
             {
                 await transaction.RollbackAsync();
@@ -646,14 +656,14 @@ namespace DotNetCoreMVCApp.Web.Controllers
 
         private bool IsValidQatarId(string qatarId)
         {
-            return !string.IsNullOrEmpty(qatarId) && 
+            return !string.IsNullOrEmpty(qatarId) &&
                    System.Text.RegularExpressions.Regex.IsMatch(qatarId, @"^\d{11}$");
         }
 
         private async Task<bool> IsQatarIdUnique(string qatarId, int? excludeId = null)
         {
             var query = _context.DriverSet.Where(d => !d.IsDeleted && d.QatarId == qatarId);
-            
+
             if (excludeId.HasValue)
             {
                 query = query.Where(d => d.Id != excludeId.Value);

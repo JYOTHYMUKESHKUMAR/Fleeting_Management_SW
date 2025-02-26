@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using DotNetCoreMVCApp.Models.Repository;
+using System;
+using System.Linq;
 
 namespace DotNetCoreMVCApp.Models.Web
 {
@@ -61,7 +63,6 @@ namespace DotNetCoreMVCApp.Models.Web
         [DataType(DataType.Date)]
         public DateTime RegistrationExpiryDate { get; set; }
 
-        // New Insurance Policy fields
         [Display(Name = "Insurance Policy No")]
         [Required(ErrorMessage = "Insurance Policy Number is required")]
         [MaxLength(50, ErrorMessage = "Insurance Policy Number cannot exceed 50 characters")]
@@ -71,6 +72,9 @@ namespace DotNetCoreMVCApp.Models.Web
         [Required(ErrorMessage = "Insurance Policy Expiry Date is required")]
         [DataType(DataType.Date)]
         public DateTime InsurancePolicyExpiry { get; set; }
+
+        [Display(Name = "Is Deactivated")]
+        public bool IsDeactivated { get; set; }
 
         // List for dropdown
         public IEnumerable<SelectListItem> VehicleTypeList { get; set; }

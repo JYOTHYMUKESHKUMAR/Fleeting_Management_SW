@@ -100,6 +100,9 @@ namespace DotNetCoreMVCApp.Models.Repository
         [Display(Name = "Insurance Policy Expiry")]
         [DataType(DataType.Date)]
         public DateTime InsurancePolicyExpiry { get; set; }
+        // New field added to match TireInformation
+        [Display(Name = "Is Deactivated")]
+        public bool IsDeactivated { get; set; }
 
         // Audit Fields
         [MaxLength(100)]

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace DotNetCoreMVCApp.Models.Web
 {
@@ -78,6 +79,9 @@ namespace DotNetCoreMVCApp.Models.Web
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime InsurancePolicyExpiry { get; set; }
+
+        [Display(Name = "Is Deactivated")]
+        public bool IsDeactivated { get; set; }
 
         [Display(Name = "Created By")]
         public string CreatedBy { get; set; }

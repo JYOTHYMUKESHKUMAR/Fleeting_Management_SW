@@ -14,7 +14,6 @@ namespace DotNetCoreMVCApp.Models.Repository
         [Key]
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        
         public int Id { get; set; }
 
         [Required]
@@ -44,6 +43,10 @@ namespace DotNetCoreMVCApp.Models.Repository
         [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)]
         public DateTime DOB { get; set; }
+
+        // Added IsDeactivated field similar to Vehicle model
+        [Display(Name = "Is Deactivated")]
+        public bool IsDeactivated { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

@@ -17,9 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using CsvHelper;
-
 
 namespace DotNetCoreMVCApp.Web.Controllers
 {
@@ -55,7 +53,8 @@ namespace DotNetCoreMVCApp.Web.Controllers
             var vehicle = new Vehicle
             {
                 RegistrationExpiryDate = DateTime.Today.AddYears(1),
-                InsurancePolicyExpiry = DateTime.Today.AddYears(1)
+                InsurancePolicyExpiry = DateTime.Today.AddYears(1),
+                IsDeactivated = false
             };
             return View(vehicle);
         }
@@ -101,6 +100,8 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 model.CreatedBy = User.Identity?.Name ?? "System";
                 model.CreatedOn = DateTime.UtcNow;
                 model.IsDeleted = false;
+                // Set IsDeactivated from the model
+                model.IsDeactivated = model.IsDeactivated;
 
                 _dbContext.VehicleSet.Add(model);
                 await _dbContext.SaveChangesAsync();
@@ -189,6 +190,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 vehicle.RegistrationExpiryDate = model.RegistrationExpiryDate;
                 vehicle.InsurancePolicyNo = model.InsurancePolicyNo.Trim();
                 vehicle.InsurancePolicyExpiry = model.InsurancePolicyExpiry;
+                vehicle.IsDeactivated = model.IsDeactivated;
                 vehicle.UpdatedBy = User.Identity?.Name ?? "System";
                 vehicle.UpdatedOn = DateTime.UtcNow;
 
@@ -340,11 +342,12 @@ namespace DotNetCoreMVCApp.Web.Controllers
             // Headers
             var headers = new[]
             {
-        "Vehicle ID", "License Plate", "Woqod License Plate", "GPS Code",
-        "Vehicle Type", "Vehicle Brand", "Vehicle Model", "Year",
-        "Fuel Tank Capacity (L)", "Fuel Limit (L)",
-        "Registration Expiry Date", "Insurance Policy No", "Insurance Policy Expiry"
-    };
+                "Vehicle ID", "License Plate", "Woqod License Plate", "GPS Code",
+                "Vehicle Type", "Vehicle Brand", "Vehicle Model", "Year",
+                "Fuel Tank Capacity (L)", "Fuel Limit (L)",
+                "Registration Expiry Date", "Insurance Policy No", "Insurance Policy Expiry",
+                "Is Deactivated"
+            };
 
             for (int i = 0; i < headers.Length; i++)
             {
@@ -371,6 +374,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 worksheet.Cells[row, 11].Value = vehicle.RegistrationExpiryDate.ToString("yyyy-MM-dd");
                 worksheet.Cells[row, 12].Value = vehicle.InsurancePolicyNo;
                 worksheet.Cells[row, 13].Value = vehicle.InsurancePolicyExpiry.ToString("yyyy-MM-dd");
+                worksheet.Cells[row, 14].Value = vehicle.IsDeactivated ? "Yes" : "No";
             }
 
             worksheet.Cells.AutoFitColumns();
@@ -397,6 +401,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
             csv.WriteField("Registration Expiry Date");
             csv.WriteField("Insurance Policy No");
             csv.WriteField("Insurance Policy Expiry");
+            csv.WriteField("Is Deactivated");
             csv.NextRecord();
 
             // Write data
@@ -415,6 +420,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 csv.WriteField(vehicle.RegistrationExpiryDate.ToString("yyyy-MM-dd"));
                 csv.WriteField(vehicle.InsurancePolicyNo);
                 csv.WriteField(vehicle.InsurancePolicyExpiry.ToString("yyyy-MM-dd"));
+                csv.WriteField(vehicle.IsDeactivated ? "Yes" : "No");
                 csv.NextRecord();
             }
 
@@ -440,7 +446,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
             document.Add(title);
 
             // Create table
-            var table = new PdfPTable(13) // Number of columns
+            var table = new PdfPTable(14) // Number of columns increased to include IsDeactivated
             {
                 WidthPercentage = 100,
                 SpacingBefore = 10f,
@@ -448,16 +454,16 @@ namespace DotNetCoreMVCApp.Web.Controllers
             };
 
             // Set column widths
-            float[] widths = new float[] { 8f, 8f, 8f, 8f, 8f, 8f, 8f, 4f, 7f, 7f, 8f, 8f, 8f };
+            float[] widths = new float[] { 8f, 8f, 8f, 8f, 8f, 8f, 8f, 4f, 7f, 7f, 8f, 8f, 8f, 6f };
             table.SetWidths(widths);
 
             // Add headers
             var headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 8);
             string[] headers = {
-        "Vehicle ID", "License Plate", "Woqod Plate", "GPS Code",
-        "Type", "Brand", "Model", "Year", "Tank Cap.", "Fuel Limit",
-        "Reg. Expiry", "Insurance No", "Ins. Expiry"
-    };
+                "Vehicle ID", "License Plate", "Woqod Plate", "GPS Code",
+                "Type", "Brand", "Model", "Year", "Tank Cap.", "Fuel Limit",
+                "Reg. Expiry", "Insurance No", "Ins. Expiry", "Deactivated"
+            };
 
             foreach (string header in headers)
             {
@@ -487,6 +493,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 table.AddCell(new PdfPCell(new Phrase(vehicle.RegistrationExpiryDate.ToString("yyyy-MM-dd"), normalFont)));
                 table.AddCell(new PdfPCell(new Phrase(vehicle.InsurancePolicyNo, normalFont)));
                 table.AddCell(new PdfPCell(new Phrase(vehicle.InsurancePolicyExpiry.ToString("yyyy-MM-dd"), normalFont)));
+                table.AddCell(new PdfPCell(new Phrase(vehicle.IsDeactivated ? "Yes" : "No", normalFont)));
             }
 
             document.Add(table);
@@ -494,6 +501,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
 
             return memoryStream.ToArray();
         }
+
         public IActionResult Import()
         {
             return View();
@@ -504,9 +512,9 @@ namespace DotNetCoreMVCApp.Web.Controllers
             try
             {
                 var templateContent =
-                    "VehicleId,LicensePlate,WoqodLicensePlate,GPSCode,VehicleType,VehicleBrand,VehicleModel,Year,FuelTankCapacity,FuelLimit,RegistrationExpiryDate,InsurancePolicyNo,InsurancePolicyExpiry\n" +
-                    $"V001,ABC123,WQD123,GPS001,{VehicleTypeHelper.ConcreteMixer},Volvo,FM12,2023,1000,800,2024-12-31,INS001,2024-12-31\n" +
-                    $"V002,XYZ789,WQD789,GPS002,{VehicleTypeHelper.ConcretePump},Mercedes,Actros,2023,1500,1200,2024-12-31,INS002,2024-12-31";
+                    "VehicleId,LicensePlate,WoqodLicensePlate,GPSCode,VehicleType,VehicleBrand,VehicleModel,Year,FuelTankCapacity,FuelLimit,RegistrationExpiryDate,InsurancePolicyNo,InsurancePolicyExpiry,IsDeactivated\n" +
+                    $"V001,ABC123,WQD123,GPS001,{VehicleTypeHelper.ConcreteMixer},Volvo,FM12,2023,1000,800,2024-12-31,INS001,2024-12-31,False\n" +
+                    $"V002,XYZ789,WQD789,GPS002,{VehicleTypeHelper.ConcretePump},Mercedes,Actros,2023,1500,1200,2024-12-31,INS002,2024-12-31,False";
 
                 var byteArray = Encoding.UTF8.GetBytes(templateContent);
                 return File(byteArray, "text/csv", "VehicleImportTemplate.csv");
@@ -606,6 +614,7 @@ namespace DotNetCoreMVCApp.Web.Controllers
                 return View();
             }
         }
+
         private bool VehicleExists(string id)
         {
             return _dbContext.VehicleSet.Any(v => v.VehicleId == id && !v.IsDeleted);
